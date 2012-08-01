@@ -15,6 +15,21 @@ class Test(unittest.TestCase):
         self.assertEqual(user.avatarMedium, 'http://media.steampowered.com/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_medium.jpg')
         self.assertEqual(user.avatarFull, 'http://media.steampowered.com/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_full.jpg')
         self.assertEqual(user.onlineState, 'online')
+        
+    def testGetGamesForUser(self):
+        games = self.steamDissector.getGamesForUser('76561197972272127')
+        self.assertTrue(len(games) > 200)
+        
+        terraria = [game for game in games if game.name == 'Terraria'][0]
+
+        self.assertIsNotNone(terraria)
+        self.assertEqual(terraria.id, '105600')
+        self.assertEqual(terraria.name, 'Terraria')
+        self.assertEqual(terraria.logo, 'http://media.steampowered.com/steamcommunity/public/images/apps/105600/e3f375e78ada9d2ec7ffa521fe1b0052d1d2bbb5.jpg')
+        self.assertEqual(terraria.storeLink, 'http://store.steampowered.com/app/105600')
+        self.assertNotEqual(terraria.hoursLast2Weeks, '')
+        self.assertTrue(float(terraria.hoursOnRecord) > 0)
+        
 
 if __name__ == "__main__":
     unittest.main()
