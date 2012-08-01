@@ -15,9 +15,7 @@ class Test(unittest.TestCase):
         self.assertEqual(user['avatarMedium'], 'http://media.steampowered.com/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_medium.jpg')
         self.assertEqual(user['avatarFull'], 'http://media.steampowered.com/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_full.jpg')
         self.assertEqual(user['onlineState'], 'online')
-        
-        #import json
-        #print json.dumps(user, indent=4)
+
 
     def testGetGamesForUser(self):
         games = self.steamDissector.getGamesForUser('76561197972272127')
@@ -32,9 +30,7 @@ class Test(unittest.TestCase):
         self.assertEqual(terraria['storeLink'], 'http://store.steampowered.com/app/105600')
         self.assertNotEqual(terraria['hoursLast2Weeks'], '')
         self.assertTrue(float(terraria['hoursOnRecord']) > 0)
-        
-        #import json
-        #print json.dumps(games, indent=4)
+
         
     def testGetDetailsForGame(self):
         terraria = self.steamDissector.getDetailsForGame('105600')
@@ -50,8 +46,16 @@ class Test(unittest.TestCase):
         self.assertEqual(terraria['releaseDate'], '1305504000')
         self.assertItemsEqual(terraria['features'], ['Single-player', 'Multi-player', 'Co-op'])
 
-        #import json
-        #print json.dumps(terraria, indent=4)
+
+#    def testForRealz(self):
+#        import json
+#        user = self.steamDissector.getUser('76561197972272127')
+#        print json.dumps(user)
+#        games = self.steamDissector.getGamesForUser('76561197972272127')
+#        print json.dumps(games)
+#        for game in games:
+#            g = self.steamDissector.getDetailsForGame(game['id'])
+#            print json.dumps(g)
 
 if __name__ == "__main__":
     unittest.main()

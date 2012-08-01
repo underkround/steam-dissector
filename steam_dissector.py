@@ -59,7 +59,9 @@ class SteamDissector(object):
     
     
     def getDetailsForGame(self, gameId):
-        response = urllib2.urlopen('http://store.steampowered.com/app/%s/' % gameId)
+        opener = urllib2.build_opener()
+        opener.addheaders.append(("Cookie", "birthtime=315561601"))
+        response = opener.open('http://store.steampowered.com/app/%s/' % gameId)
         html = response.read()
         
         soup = BeautifulSoup(html)
@@ -102,7 +104,7 @@ class SteamDissector(object):
                 
         releaseDateHeader = detailsBlock.find('b', text='Release Date:')
         if releaseDateHeader is not None and releaseDateHeader.nextSibling is not None:
-            date = datetime.datetime.strptime(releaseDateHeader.nextSibling.strip(), '%d %B %Y')
+            date = datetime.datetime.strptime(releaseDateHeader.nextSibling.strip(), '%d %b %Y')
             game['releaseDate'] = str(calendar.timegm(date.utctimetuple()))
 
         features = soup.find_all('div', 'game_area_details_specs')
