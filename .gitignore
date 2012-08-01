@@ -134,7 +134,6 @@ Desktop.ini
 *.py[co]
 
 # Packages
-*.egg
 *.egg-info
 dist
 build
@@ -161,3 +160,6 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+
+
+mongodb.cfg
