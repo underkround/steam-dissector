@@ -12,6 +12,12 @@ def getString(soup, default=''):
     return soup.string.strip()
 
 
+
+class GameNotFoundException():
+    pass
+
+
+
 class SteamDissector(object):
     
     def __init__(self):
@@ -67,6 +73,15 @@ class SteamDissector(object):
         soup = BeautifulSoup(html)
         
         game = {}
+        
+        detailsBlock = soup.find('div', 'details_block')
+        if detailsBlock is None:
+            raise GameNotFoundException()
+            
+        nameHeader = detailsBlock.find('b', text='Title:')
+        game['name'] = nameHeader.nextSibling.strip()
+                
+
         game['id'] = gameId
         game['logoSmall'] = 'http://cdn.steampowered.com/v/gfx/apps/%s/capsule_184x69.jpg' % gameId
 
@@ -74,13 +89,7 @@ class SteamDissector(object):
         game['logoBig'] = tmp.attrs['src'].split('?')[0] if tmp is not None else ''
                 
         game['metascore'] = getString(soup.find(id='game_area_metascore'))
-        
-        detailsBlock = soup.find('div', 'details_block')
 
-        nameHeader = detailsBlock.find('b', text='Title:')
-        if nameHeader is not None:
-            game['name'] = nameHeader.nextSibling.strip()
-            
         genreHeader = detailsBlock.find('b', text='Genre:')
         if genreHeader is not None:
             genreAnchors = genreHeader.findNextSiblings('a')
@@ -104,8 +113,16 @@ class SteamDissector(object):
                 
         releaseDateHeader = detailsBlock.find('b', text='Release Date:')
         if releaseDateHeader is not None and releaseDateHeader.nextSibling is not None:
-            date = datetime.datetime.strptime(releaseDateHeader.nextSibling.strip(), '%d %b %Y')
-            game['releaseDate'] = str(calendar.timegm(date.utctimetuple()))
+            try:
+                date = datetime.datetime.strptime(releaseDateHeader.nextSibling.strip(), '%d %b %Y')
+                game['releaseDate'] = str(calendar.timegm(date.utctimetuple()))
+            except:
+                try:
+                    date = datetime.datetime.strptime(releaseDateHeader.nextSibling.strip(), '%b %Y')
+                    game['releaseDate'] = str(calendar.timegm(date.utctimetuple()))
+                except:
+                    pass
+                    # shitty release date format
 
         features = soup.find_all('div', 'game_area_details_specs')
         if features is not None:
