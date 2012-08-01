@@ -1,54 +1,114 @@
 import urllib2
 from bs4 import BeautifulSoup
-from user import User
-from game import Game
+import re
+import datetime
+import calendar
+
+reTitle = re.compile('Title:</b>(.+)<br>')
+
+def getString(soup, default=''):
+    if soup is None or soup.string is None:
+        return default
+    return soup.string.strip()
+
 
 class SteamDissector(object):
     
     def __init__(self):
         pass
+
     
     def getUser(self, userId):
         response = urllib2.urlopen('http://steamcommunity.com/profiles/%s?xml=1' % userId)
-        userXml = response.read()
+        xml = response.read()
         
-        soup = BeautifulSoup(userXml)
+        soup = BeautifulSoup(xml)
         
-        user = User()
-        user.id = soup.steamid64.string
-        user.name = soup.steamid.string
-        user.onlineState = soup.onlinestate.string
-        user.avatarIcon = soup.avataricon.string
-        user.avatarMedium = soup.avatarmedium.string
-        user.avatarFull = soup.avatarfull.string
+        user = {}
+        user['id'] = getString(soup.steamid64)
+        user['name'] = getString(soup.steamid)
+        user['onlineState'] = getString(soup.onlinestate)
+        user['avatarIcon'] = getString(soup.avataricon)
+        user['avatarMedium'] = getString(soup.avatarmedium)
+        user['avatarFull'] = getString(soup.avatarfull)
         
         return user
 
+
     def getGamesForUser(self, userId):
         response = urllib2.urlopen('http://steamcommunity.com/profiles/%s/games?xml=1' % userId)
-        userXml = response.read()
+        xml = response.read()
         
-        soup = BeautifulSoup(userXml)
+        soup = BeautifulSoup(xml)
         
         xmlgames = soup.find_all('game')
         
         games = []
         for xmlGame in xmlgames:
-            game = Game()
-            game.id = xmlGame.appid.string
-            game.name = xmlGame.find('name').string
-            game.logo = xmlGame.logo.string
-            game.storeLink = xmlGame.storelink.string
-            
-            if xmlGame.hourslast2weeks is not None:
-                game.hoursLast2Weeks = xmlGame.hourslast2weeks.string
-            else:
-                game.hoursLast2Weeks = '0'
+            game = {}
+            game['id'] = getString(xmlGame.appid)
+            game['name'] = getString(xmlGame.find('name'))
+            game['logo'] = getString(xmlGame.logo)
+            game['storeLink'] = getString(xmlGame.storelink)
+            game['hoursLast2Weeks'] = getString(xmlGame.hourslast2weeks, '0')
+            game['hoursOnRecord'] = getString(xmlGame.hoursonrecord, '0')
 
-            if xmlGame.hoursonrecord is not None:
-                game.hoursOnRecord = xmlGame.hoursonrecord.string
-            else:
-                game.hoursOnRecord = '0'
             games.append(game)
             
         return games
+    
+    
+    def getDetailsForGame(self, gameId):
+        response = urllib2.urlopen('http://store.steampowered.com/app/%s/' % gameId)
+        html = response.read()
+        
+        soup = BeautifulSoup(html)
+        
+        game = {}
+        game['id'] = gameId
+        game['logoSmall'] = 'http://cdn.steampowered.com/v/gfx/apps/%s/capsule_184x69.jpg' % gameId
+
+        tmp = soup.find('img', 'game_header_image')
+        game['logoBig'] = tmp.attrs['src'].split('?')[0] if tmp is not None else ''
+                
+        game['metascore'] = getString(soup.find(id='game_area_metascore'))
+        
+        detailsBlock = soup.find('div', 'details_block')
+
+        nameHeader = detailsBlock.find('b', text='Title:')
+        if nameHeader is not None:
+            game['name'] = nameHeader.nextSibling.strip()
+            
+        genreHeader = detailsBlock.find('b', text='Genre:')
+        if genreHeader is not None:
+            genreAnchors = genreHeader.findNextSiblings('a')
+            game['genres'] = []
+            for genreAnchor in genreAnchors:
+                game['genres'].append(getString(genreAnchor))
+            
+        developerHeader = detailsBlock.find('b', text='Developer:')
+        if developerHeader is not None:
+            developerAnchors = developerHeader.findNextSiblings('a')
+            game['developers'] = []
+            for developerAnchor in developerAnchors:
+                game['developers'].append(getString(developerAnchor))
+            
+        publisherHeader = detailsBlock.find('b', text='Publisher:')
+        if publisherHeader is not None:
+            publisherAnchors = publisherHeader.findNextSiblings('a')
+            game['publishers'] = []
+            for publisherAnchor in publisherAnchors:
+                game['publishers'].append(getString(publisherAnchor))
+                
+        releaseDateHeader = detailsBlock.find('b', text='Release Date:')
+        if releaseDateHeader is not None and releaseDateHeader.nextSibling is not None:
+            date = datetime.datetime.strptime(releaseDateHeader.nextSibling.strip(), '%d %B %Y')
+            game['releaseDate'] = str(calendar.timegm(date.utctimetuple()))
+
+        features = soup.find_all('div', 'game_area_details_specs')
+        if features is not None:
+            game['features'] = []
+            for feature in features:
+                game['features'].append(getString(feature.find('div', 'name')))
+                
+        return game
