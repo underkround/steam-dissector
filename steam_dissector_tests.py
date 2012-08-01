@@ -14,7 +14,7 @@ class Test(unittest.TestCase):
         self.assertEqual(user.avatarIcon, 'http://media.steampowered.com/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2.jpg')
         self.assertEqual(user.avatarMedium, 'http://media.steampowered.com/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_medium.jpg')
         self.assertEqual(user.avatarFull, 'http://media.steampowered.com/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_full.jpg')
-        self.assertEqual(user.state, 'online')
+        self.assertEqual(user.onlineState, 'online')
 
 if __name__ == "__main__":
     unittest.main()
