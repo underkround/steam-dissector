@@ -16,5 +16,6 @@ Goal is to create a service that can be used to sort your Steam game library bet
 Uses [MongoDB](http://www.mongodb.org/) as cache, since the Steam store is pretty slow.
 
 #### Libraries used:
+
 * [BeautifulSoup](http://www.crummy.com/software/BeautifulSoup/)
 * [PyMongo](https://github.com/mongodb/mongo-python-driver/)
