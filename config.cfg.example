@@ -1,0 +1,3 @@
+[MongoDB]
+#connection string for mongodb (see http://www.mongodb.org/display/DOCS/Connections)
+connectionString=mongodb://localhost

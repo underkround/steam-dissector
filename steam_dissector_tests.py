@@ -1,10 +1,12 @@
 import unittest
 from steam_dissector import SteamDissector, GameNotFoundException
+from cache import Cache
 
-class Test(unittest.TestCase):
+class TestSteamDissector(unittest.TestCase):
     
     def setUp(self):
         self.steamDissector = SteamDissector()
+        
 
     def testGetUser(self):
         user = self.steamDissector.getUser('76561197972272127')
@@ -59,6 +61,26 @@ class Test(unittest.TestCase):
 #                print json.dumps(g)
 #            except GameNotFoundException:
 #                print "Game %s, %s not found!" % (game['id'], game['name'])
+
+
+class TestCache(unittest.TestCase):
+    
+    def setUp(self):
+        self.cache = Cache()
+        self.cache.clear()
+
+
+    def testGetUser(self):
+        game = self.cache.getGame({'id': '105600'})
+        self.assertIsNone(game)
+        
+        self.cache.putGame({'id': '105600', 'name': 'Terraria', 'features': ['Single-player', 'Multi-player', 'Co-op']})
+        game = self.cache.getGame('105600')
+        self.assertIsNotNone(game)
+        self.assertEqual(game['id'], '105600')
+        self.assertEqual(game['name'], 'Terraria')
+        self.assertItemsEqual(game['features'], ['Single-player', 'Multi-player', 'Co-op'])
+
 
 if __name__ == "__main__":
     unittest.main()

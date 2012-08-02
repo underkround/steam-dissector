@@ -1,10 +1,8 @@
 import urllib2
 from bs4 import BeautifulSoup
-import re
 import datetime
 import calendar
 
-reTitle = re.compile('Title:</b>(.+)<br>')
 
 def getString(soup, default=''):
     if soup is None or soup.string is None:
@@ -12,10 +10,8 @@ def getString(soup, default=''):
     return soup.string.strip()
 
 
-
-class GameNotFoundException():
+class GameNotFoundException(Exception):
     pass
-
 
 
 class SteamDissector(object):
