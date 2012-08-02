@@ -16,8 +16,8 @@ class GameNotFoundException(Exception):
 
 class SteamDissector(object):
     
-    def __init__(self):
-        pass
+    def __init__(self, cache):
+        self.cache = cache
 
     
     def getUser(self, userId):
@@ -61,6 +61,12 @@ class SteamDissector(object):
     
     
     def getDetailsForGame(self, gameId):
+        dbgame = self.cache.getGame(gameId)
+        if dbgame is not None:
+            if 'notFound' in dbgame:
+                raise GameNotFoundException()
+            return dbgame
+        
         opener = urllib2.build_opener()
         opener.addheaders.append(("Cookie", "birthtime=315561601"))
         response = opener.open('http://store.steampowered.com/app/%s/' % gameId)
@@ -68,17 +74,17 @@ class SteamDissector(object):
         
         soup = BeautifulSoup(html)
         
-        game = {}
+        game = {'id': gameId}
         
         detailsBlock = soup.find('div', 'details_block')
         if detailsBlock is None:
+            game['notFound'] = True
+            self.cache.putGame(game)
             raise GameNotFoundException()
             
         nameHeader = detailsBlock.find('b', text='Title:')
         game['name'] = nameHeader.nextSibling.strip()
-                
 
-        game['id'] = gameId
         game['logoSmall'] = 'http://cdn.steampowered.com/v/gfx/apps/%s/capsule_184x69.jpg' % gameId
 
         tmp = soup.find('img', 'game_header_image')
@@ -125,5 +131,7 @@ class SteamDissector(object):
             game['features'] = []
             for feature in features:
                 game['features'].append(getString(feature.find('div', 'name')))
-                
-        return game
+
+        self.cache.putGame(game)
+        dbgame = self.cache.getGame(gameId)
+        return dbgame

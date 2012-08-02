@@ -11,7 +11,7 @@ class Cache(object):
         self.connection = pymongo.Connection(connString)
         self.db = self.connection['steam-dissector']
         self.games = self.db.games
-        self.games.ensure_index('id')
+        self.games.ensure_index('id', unique=True)
 
 
     def clear(self):
@@ -19,9 +19,12 @@ class Cache(object):
 
 
     def putGame(self, game):
-        return self.games.insert(game)
+        self.games.update({'id': game['id']}, game, upsert=True)
 
 
     def getGame(self, gameId):
-        return self.games.find_one({'id': gameId})
+        game = self.games.find_one({'id': gameId})
+        if game is not None:
+            del game['_id']
+        return game
 
