@@ -25,6 +25,7 @@ class Handler(BaseHTTPRequestHandler):
             
     def printJson(self, js):
         self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
         self.end_headers()
         self.wfile.write(json.dumps(js))
     
@@ -60,6 +61,8 @@ class Handler(BaseHTTPRequestHandler):
     def getProfileGames(self, profileId):
         try:
             json = self.dissector.getGamesForUser(profileId)
+            for game in json:
+                game['detailsUrl'] = '/games/%s' % game['id']
             self.printJson(json)
         except UserNotFoundException:
             self.error('Profile not found', 404)
