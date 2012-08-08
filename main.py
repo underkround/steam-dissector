@@ -33,7 +33,8 @@ class Handler(BaseHTTPRequestHandler):
     def error(self, msg = '', code = 400, error = True):
         if error:
             self.log_error(msg)
-            self.log_error(traceback.format_exc())
+            trace = traceback.format_exc()
+            self.log_error(trace.replace('%', '%%'))
         self.send_error(code, msg)
     
     

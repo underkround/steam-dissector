@@ -82,7 +82,7 @@ class SteamDissector(object):
         response = opener.open('http://store.steampowered.com/app/%s/' % gameId)
         html = response.read()
         
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(html, 'lxml')
         
         game = {'id': gameId}
         
