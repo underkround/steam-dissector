@@ -19,3 +19,4 @@ Uses [MongoDB](http://www.mongodb.org/) as cache, since the Steam store is prett
 
 * [BeautifulSoup](http://www.crummy.com/software/BeautifulSoup/)
 * [PyMongo](https://github.com/mongodb/mongo-python-driver/)
+* [lxml](http://lxml.de/)
