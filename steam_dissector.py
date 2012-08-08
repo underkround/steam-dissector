@@ -14,6 +14,10 @@ class GameNotFoundException(Exception):
     pass
 
 
+class UserNotFoundException(Exception):
+    pass
+
+
 class SteamDissector(object):
     
     def __init__(self, cache):
@@ -25,6 +29,9 @@ class SteamDissector(object):
         xml = response.read()
         
         soup = BeautifulSoup(xml)
+        
+        if soup.response is not None and soup.response.error is not None:
+            raise UserNotFoundException()
         
         user = {}
         user['id'] = getString(soup.steamid64)
@@ -43,6 +50,9 @@ class SteamDissector(object):
         
         soup = BeautifulSoup(xml)
         
+        if soup.response is not None and soup.response.error is not None:
+            raise UserNotFoundException()
+
         xmlgames = soup.find_all('game')
         
         games = []

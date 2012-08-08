@@ -1,5 +1,6 @@
 import unittest
-from steam_dissector import SteamDissector
+from steam_dissector import SteamDissector, UserNotFoundException,\
+    GameNotFoundException
 from cache import Cache
 from mock_cache import MockCache
 
@@ -19,8 +20,8 @@ class TestSteamDissector(unittest.TestCase):
         self.assertEqual(user['avatarMedium'], 'http://media.steampowered.com/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_medium.jpg')
         self.assertEqual(user['avatarFull'], 'http://media.steampowered.com/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_full.jpg')
         self.assertEqual(user['onlineState'], 'online')
-
-
+        
+        
     def testGetGamesForUser(self):
         games = self.steamDissector.getGamesForUser('76561197972272127')
         self.assertTrue(len(games) > 200)
@@ -65,6 +66,33 @@ class TestSteamDissector(unittest.TestCase):
         self.assertEqual(self.mockCache.games[0], game2)
         self.assertEqual(self.mockCache.games[0], game1)
 
+
+    def testGetUserThrowsUserNotFoundException(self):
+        ex = None
+        try:
+            self.steamDissector.getUser('asd')
+        except UserNotFoundException as e:
+            ex = e
+        self.assertIsNotNone(ex)  
+
+
+    def testGetGamesForUserThrowsUserNotFoundException(self):
+        ex = None
+        try:
+            self.steamDissector.getGamesForUser('asd')
+        except UserNotFoundException as e:
+            ex = e
+        self.assertIsNotNone(ex)  
+
+
+    def testtestGetDetailsForGameThrowsGameNotFoundException(self):
+        ex = None
+        try:
+            self.steamDissector.getDetailsForGame('asd')
+        except GameNotFoundException as e:
+            ex = e
+        self.assertIsNotNone(ex)  
+    
 
 class TestCache(unittest.TestCase):
     
