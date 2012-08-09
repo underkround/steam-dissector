@@ -38,6 +38,13 @@ class Handler(BaseHTTPRequestHandler):
         self.send_error(code, msg)
     
     
+    def isVanityUrl(self, profileId):
+        import re
+        if (re.match("\d{17}", profileId)):
+            return False
+        return True
+
+    
     def getGame(self, gameId):
         try:
             json = self.dissector.getDetailsForGame(gameId)
@@ -49,8 +56,9 @@ class Handler(BaseHTTPRequestHandler):
         
         
     def getProfile(self, profileId):
+        vanityUrl = self.isVanityUrl(profileId)
         try:
-            json = self.dissector.getUser(profileId)
+            json = self.dissector.getUser(profileId, vanityUrl)
             json['gamesUrl'] = '/profiles/%s/games' % profileId
             self.printJson(json)
         except UserNotFoundException:
@@ -60,8 +68,9 @@ class Handler(BaseHTTPRequestHandler):
         
         
     def getProfileGames(self, profileId):
+        vanityUrl = self.isVanityUrl(profileId)
         try:
-            json = self.dissector.getGamesForUser(profileId)
+            json = self.dissector.getGamesForUser(profileId, vanityUrl)
             for game in json:
                 game['detailsUrl'] = '/games/%s' % game['id']
             self.printJson(json)

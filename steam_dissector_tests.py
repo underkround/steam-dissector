@@ -11,6 +11,18 @@ class TestSteamDissector(unittest.TestCase):
         self.steamDissector = SteamDissector(self.mockCache)
         
 
+    def testGetVanityProfile(self):
+        user = self.steamDissector.getUser('zemm', True)
+
+        self.assertEqual(user['id'], '76561198027383614')
+        self.assertEqual(user['name'], 'zemm')
+        
+
+    def testGetGamesForUserWithVanityProfile(self):
+        games = self.steamDissector.getGamesForUser('zemm', True)
+        self.assertTrue(len(games) > 20)
+
+    
     def testGetUser(self):
         user = self.steamDissector.getUser('76561197972272127')
 

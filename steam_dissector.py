@@ -24,8 +24,11 @@ class SteamDissector(object):
         self.cache = cache
 
     
-    def getUser(self, userId):
-        response = urllib2.urlopen('http://steamcommunity.com/profiles/%s?xml=1' % userId)
+    def getUser(self, userId, isVanityUrl = False):
+        url = 'http://steamcommunity.com/profiles/%s?xml=1' % userId
+        if isVanityUrl:
+            url = 'http://steamcommunity.com/id/%s?xml=1' % userId
+        response = urllib2.urlopen(url)
         xml = response.read()
         
         soup = BeautifulSoup(xml)
@@ -44,8 +47,11 @@ class SteamDissector(object):
         return user
 
 
-    def getGamesForUser(self, userId):
-        response = urllib2.urlopen('http://steamcommunity.com/profiles/%s/games?xml=1' % userId)
+    def getGamesForUser(self, userId, isVanityUrl = False):
+        url = 'http://steamcommunity.com/profiles/%s/games?xml=1' % userId
+        if isVanityUrl:
+            url = 'http://steamcommunity.com/id/%s/games?xml=1' % userId
+        response = urllib2.urlopen(url)
         xml = response.read()
         
         soup = BeautifulSoup(xml)
@@ -82,7 +88,11 @@ class SteamDissector(object):
         response = opener.open('http://store.steampowered.com/app/%s/' % gameId)
         html = response.read()
         
-        soup = BeautifulSoup(html, 'lxml')
+        try:
+            import lxml
+            soup = BeautifulSoup(html, 'lxml')
+        except:
+            soup = BeautifulSoup(html)
         
         game = {'id': gameId}
         
