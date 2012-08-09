@@ -8,11 +8,12 @@ cdatare = re.compile("\[CDATA\[(.*)\]\]")
 def getString(soup, default=''):
     if soup is None or soup.string is None:
         return default
-    match = cdatare.match(soup.string)
-    group = match.group(0)
-    if group is None:
-        return soup.strip()
+    match = cdatare.search(soup.string)
+    if match is None:
+        return soup.string.strip()
+    group = match.group(1)
     return group.strip()
+
 
 
 class GameNotFoundException(Exception):
