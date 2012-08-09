@@ -31,7 +31,11 @@ class SteamDissector(object):
         response = urllib2.urlopen(url)
         xml = response.read()
         
-        soup = BeautifulSoup(xml)
+        try:
+            import html5lib
+            soup = BeautifulSoup(xml, 'html5lib')
+        except:
+            soup = BeautifulSoup(xml)
         
         if soup.response is not None and soup.response.error is not None:
             raise UserNotFoundException()
@@ -54,7 +58,11 @@ class SteamDissector(object):
         response = urllib2.urlopen(url)
         xml = response.read()
         
-        soup = BeautifulSoup(xml)
+        try:
+            import html5lib
+            soup = BeautifulSoup(xml, 'html5lib')
+        except:
+            soup = BeautifulSoup(xml)
         
         if soup.response is not None and soup.response.error is not None:
             raise UserNotFoundException()
@@ -89,8 +97,8 @@ class SteamDissector(object):
         html = response.read()
         
         try:
-            import lxml
-            soup = BeautifulSoup(html, 'lxml')
+            import html5lib
+            soup = BeautifulSoup(html, 'html5lib')
         except:
             soup = BeautifulSoup(html)
         
