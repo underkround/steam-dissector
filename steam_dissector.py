@@ -37,11 +37,7 @@ class SteamDissector(object):
         response = urllib2.urlopen(url)
         xml = response.read()
         
-        try:
-            import html5lib
-            soup = BeautifulSoup(xml, 'html5lib')
-        except:
-            soup = BeautifulSoup(xml)
+        soup = BeautifulSoup(xml, 'html5lib')
         
         if soup.response is not None and soup.response.error is not None:
             raise UserNotFoundException()
@@ -64,11 +60,7 @@ class SteamDissector(object):
         response = urllib2.urlopen(url)
         xml = response.read()
         
-        try:
-            import html5lib
-            soup = BeautifulSoup(xml, 'html5lib')
-        except:
-            soup = BeautifulSoup(xml)
+        soup = BeautifulSoup(xml, 'html5lib')
         
         if soup.response is not None and soup.response.error is not None:
             raise UserNotFoundException()
@@ -103,11 +95,7 @@ class SteamDissector(object):
         response = opener.open(storeLink)
         html = response.read()
         
-        try:
-            import html5lib
-            soup = BeautifulSoup(html, 'html5lib')
-        except:
-            soup = BeautifulSoup(html)
+        soup = BeautifulSoup(html, 'html5lib')
         
         game = {'id': gameId}
         
@@ -134,6 +122,7 @@ class SteamDissector(object):
             genreAnchors = genreHeader.findNextSiblings('a')
             game['genres'] = []
             for genreAnchor in genreAnchors:
+                if genreAnchor.findNextSibling('b').text == "Publisher:": break
                 game['genres'].append(getString(genreAnchor))
             
         developerHeader = detailsBlock.find('b', text='Developer:')
@@ -141,6 +130,7 @@ class SteamDissector(object):
             developerAnchors = developerHeader.findNextSiblings('a')
             game['developers'] = []
             for developerAnchor in developerAnchors:
+                if developerAnchor.findNextSibling('b').text == "Release Date:": break
                 game['developers'].append(getString(developerAnchor))
             
         publisherHeader = detailsBlock.find('b', text='Publisher:')
@@ -148,6 +138,7 @@ class SteamDissector(object):
             publisherAnchors = publisherHeader.findNextSiblings('a')
             game['publishers'] = []
             for publisherAnchor in publisherAnchors:
+                if publisherAnchor.findNextSibling('b').text == "Languages:": break
                 game['publishers'].append(getString(publisherAnchor))
                 
         releaseDateHeader = detailsBlock.find('b', text='Release Date:')

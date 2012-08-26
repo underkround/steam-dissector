@@ -115,6 +115,16 @@ class TestSteamDissector(unittest.TestCase):
         self.assertEqual(gameWithoutMetascore['metascore'], '')
 
 
+    # something is fishy here
+    def testAlienSwarm(self):
+        game = self.steamDissector.getDetailsForGame('630')
+
+        self.assertIsNotNone(game)
+        self.assertItemsEqual(game['genres'], ['Action'])
+        self.assertItemsEqual(game['developers'], ['Valve'])
+        self.assertItemsEqual(game['publishers'], ['Valve'])
+        
+
 class TestCache(unittest.TestCase):
     
     def setUp(self):
