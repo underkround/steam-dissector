@@ -55,6 +55,7 @@ class TestSteamDissector(unittest.TestCase):
         self.assertEqual(terraria['id'], '105600')
         self.assertEqual(terraria['logoBig'], 'http://cdn.steampowered.com/v/gfx/apps/105600/header_292x136.jpg')
         self.assertEqual(terraria['logoSmall'], 'http://cdn.steampowered.com/v/gfx/apps/105600/capsule_184x69.jpg')
+        self.assertEqual(terraria['storeLink'], 'http://store.steampowered.com/app/105600')
         self.assertEqual(terraria['metascore'], '83')
         self.assertEqual(terraria['name'], 'Terraria')
         self.assertItemsEqual(terraria['genres'], ['Action', 'Adventure', 'RPG', 'Indie', 'Platformer'])

@@ -99,7 +99,8 @@ class SteamDissector(object):
         
         opener = urllib2.build_opener()
         opener.addheaders.append(("Cookie", "birthtime=315561601"))
-        response = opener.open('http://store.steampowered.com/app/%s/' % gameId)
+        storeLink = 'http://store.steampowered.com/app/%s' % gameId
+        response = opener.open(storeLink)
         html = response.read()
         
         try:
@@ -120,6 +121,7 @@ class SteamDissector(object):
         game['name'] = nameHeader.nextSibling.strip()
 
         game['logoSmall'] = 'http://cdn.steampowered.com/v/gfx/apps/%s/capsule_184x69.jpg' % gameId
+        game['storeLink'] = storeLink
 
         tmp = soup.find('img', 'game_header_image')
         game['logoBig'] = tmp.attrs['src'].split('?')[0] if tmp is not None else ''
