@@ -123,7 +123,9 @@ class SteamDissector(object):
             game['genres'] = []
             for genreAnchor in genreAnchors:
                 if genreAnchor.findNextSibling('b').text == "Publisher:": break
-                game['genres'].append(getString(genreAnchor))
+                genre = getString(genreAnchor)
+                if (genre != ""):
+                    game['genres'].append(genre)
             
         developerHeader = detailsBlock.find('b', text='Developer:')
         if developerHeader is not None:
@@ -131,7 +133,9 @@ class SteamDissector(object):
             game['developers'] = []
             for developerAnchor in developerAnchors:
                 if developerAnchor.findNextSibling('b').text == "Release Date:": break
-                game['developers'].append(getString(developerAnchor))
+                developer = getString(developerAnchor)
+                if (developer != ""):
+                    game['developers'].append(developer)
             
         publisherHeader = detailsBlock.find('b', text='Publisher:')
         if publisherHeader is not None:
@@ -139,7 +143,9 @@ class SteamDissector(object):
             game['publishers'] = []
             for publisherAnchor in publisherAnchors:
                 if publisherAnchor.findNextSibling('b').text == "Languages:": break
-                game['publishers'].append(getString(publisherAnchor))
+                publisher = getString(publisherAnchor)
+                if (publisher != ""):
+                    game['publishers'].append(publisher)
                 
         releaseDateHeader = detailsBlock.find('b', text='Release Date:')
         if releaseDateHeader is not None and releaseDateHeader.nextSibling is not None:

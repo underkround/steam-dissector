@@ -125,6 +125,14 @@ class TestSteamDissector(unittest.TestCase):
         self.assertItemsEqual(game['publishers'], ['Valve'])
         
 
+    # something is fishy here
+    def testEmptyPublishers(self):
+        game = self.steamDissector.getDetailsForGame('1280')
+
+        self.assertIsNotNone(game)
+        self.assertItemsEqual(game['publishers'], [])
+
+
 class TestCache(unittest.TestCase):
     
     def setUp(self):
