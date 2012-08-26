@@ -98,7 +98,7 @@ class TestSteamDissector(unittest.TestCase):
         self.assertIsNotNone(ex)  
 
 
-    def testtestGetDetailsForGameThrowsGameNotFoundException(self):
+    def testGetDetailsForGameThrowsGameNotFoundException(self):
         ex = None
         try:
             self.steamDissector.getDetailsForGame('asd')
@@ -106,6 +106,14 @@ class TestSteamDissector(unittest.TestCase):
             ex = e
         self.assertIsNotNone(ex)  
     
+    
+    def testMetascores(self):
+        terraria = self.steamDissector.getDetailsForGame('105600')
+        self.assertEqual(terraria['metascore'], '83')
+        
+        gameWithoutMetascore = self.steamDissector.getDetailsForGame('15700')
+        self.assertEqual(gameWithoutMetascore['metascore'], '')
+
 
 class TestCache(unittest.TestCase):
     
