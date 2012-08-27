@@ -95,7 +95,7 @@ class SteamDissector(object):
         response = opener.open(storeLink)
         html = response.read()
         
-        soup = BeautifulSoup(html, 'html5lib')
+        soup = BeautifulSoup(html, 'html5lib', from_encoding="utf-8")
         
         game = {'id': gameId}
         

@@ -1,4 +1,4 @@
-import unittest
+﻿import unittest
 from steam_dissector import SteamDissector, UserNotFoundException,\
     GameNotFoundException
 from cache import Cache
@@ -60,7 +60,7 @@ class TestSteamDissector(unittest.TestCase):
         self.assertEqual(terraria['name'], 'Terraria')
         self.assertItemsEqual(terraria['genres'], ['Action', 'Adventure', 'RPG', 'Indie', 'Platformer'])
         self.assertItemsEqual(terraria['developers'], ['Re-Logic'])
-        self.assertItemsEqual(terraria['publishers'], [''])
+        self.assertItemsEqual(terraria['publishers'], [])
         self.assertEqual(terraria['releaseDate'], '1305504000')
         self.assertItemsEqual(terraria['features'], ['Single-player', 'Multi-player', 'Co-op'])
         
@@ -125,7 +125,6 @@ class TestSteamDissector(unittest.TestCase):
         self.assertItemsEqual(game['publishers'], ['Valve'])
         
 
-    # something is fishy here
     def testEmptyPublishers(self):
         game = self.steamDissector.getDetailsForGame('1280')
 
@@ -133,6 +132,13 @@ class TestSteamDissector(unittest.TestCase):
         self.assertItemsEqual(game['publishers'], [])
 
 
+    def testUnicode(self):
+        game = self.steamDissector.getDetailsForGame('62100')
+
+        self.assertIsNotNone(game)
+        self.assertItemsEqual(game['developers'], [u"Zoë Mode"])
+
+        
 class TestCache(unittest.TestCase):
     
     def setUp(self):
