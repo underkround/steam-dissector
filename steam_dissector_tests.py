@@ -147,6 +147,12 @@ class TestSteamDissector(unittest.TestCase):
         except GameNotFoundException as e:
             ex = e
         self.assertIsNotNone(ex) 
+        
+    
+    def testMonkeyIsland2(self):
+        game = self.steamDissector.getDetailsForGame('32460')
+        self.assertIsNotNone(game)
+        self.assertEqual(game['name'], u'Monkey Island™ 2 Special Edition: LeChuck’s Revenge™')
 
 
 if __name__ == "__main__":

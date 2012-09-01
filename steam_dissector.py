@@ -16,7 +16,9 @@ class NoRedirectHandler(urllib2.HTTPRedirectHandler):
     http_error_307 = http_error_302
     
     
+titlere = re.compile("<b>Title:</b>(.*)<br>")
 cdatare = re.compile("\[CDATA\[(.*)\]\]")
+
 def getString(soup, default=''):
     if soup is None or soup.string is None:
         return default
@@ -116,8 +118,11 @@ class SteamDissector(object):
             self.cache.putGame(game)
             raise GameNotFoundException()
             
-        nameHeader = detailsBlock.find('b', text='Title:')
-        game['name'] = nameHeader.nextSibling.strip()
+        match = titlere.search(html)
+        if match is not None:
+            game['name'] = BeautifulSoup(match.group(1).strip(), from_encoding="utf-8").text
+        else:
+            game['name'] = "Unknown"
 
         game['logoSmall'] = 'http://cdn.steampowered.com/v/gfx/apps/%s/capsule_184x69.jpg' % gameId
         game['storeLink'] = storeLink
