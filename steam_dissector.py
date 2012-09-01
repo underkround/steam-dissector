@@ -4,6 +4,18 @@ import datetime
 import calendar
 import re
 
+class NoRedirectHandler(urllib2.HTTPRedirectHandler):
+    def http_error_302(self, req, fp, code, msg, headers):
+        infourl = urllib2.addinfourl(fp, headers, req.get_full_url())
+        infourl.status = code
+        infourl.code = code
+        return infourl
+    http_error_300 = http_error_302
+    http_error_301 = http_error_302
+    http_error_303 = http_error_302
+    http_error_307 = http_error_302
+    
+    
 cdatare = re.compile("\[CDATA\[(.*)\]\]")
 def getString(soup, default=''):
     if soup is None or soup.string is None:
@@ -13,7 +25,6 @@ def getString(soup, default=''):
         return soup.string.strip()
     group = match.group(1)
     return group.strip()
-
 
 
 class GameNotFoundException(Exception):
@@ -89,7 +100,7 @@ class SteamDissector(object):
                 raise GameNotFoundException()
             return dbgame
         
-        opener = urllib2.build_opener()
+        opener = urllib2.build_opener(NoRedirectHandler())
         opener.addheaders.append(("Cookie", "birthtime=315561601"))
         storeLink = 'http://store.steampowered.com/app/%s' % gameId
         response = opener.open(storeLink)
