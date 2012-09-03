@@ -39,8 +39,9 @@ class UserNotFoundException(Exception):
 
 class SteamDissector(object):
     
-    def __init__(self, cache):
+    def __init__(self, cache, statistics):
         self.cache = cache
+        self.statistics = statistics
 
     
     def getUser(self, userId, isVanityUrl = False):
@@ -63,6 +64,7 @@ class SteamDissector(object):
         user['avatarMedium'] = getString(soup.avatarmedium)
         user['avatarFull'] = getString(soup.avatarfull)
         
+        self.statistics.putUser(user)
         return user
 
 
@@ -91,11 +93,14 @@ class SteamDissector(object):
             game['hoursOnRecord'] = getString(xmlGame.hoursonrecord, '0')
 
             games.append(game)
-            
+
+        self.statistics.putGamesForUser(userId, games)
         return games
     
     
     def getDetailsForGame(self, gameId):
+        self.statistics.detailsFetched(gameId)
+
         dbgame = self.cache.getGame(gameId)
         if dbgame is not None:
             if 'notFound' in dbgame:

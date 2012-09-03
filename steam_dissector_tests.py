@@ -1,14 +1,15 @@
 ﻿import unittest
 from steam_dissector import SteamDissector, UserNotFoundException,\
     GameNotFoundException
-from cache import Cache
 from mock_cache import MockCache
+from mock_statistics import MockStatistics
 
 class TestSteamDissector(unittest.TestCase):
     
     def setUp(self):
         self.mockCache = MockCache()
-        self.steamDissector = SteamDissector(self.mockCache)
+        self.mockStatistics = MockStatistics()
+        self.steamDissector = SteamDissector(self.mockCache, self.mockStatistics)
         
 
     def testGetVanityProfile(self):
@@ -154,6 +155,25 @@ class TestSteamDissector(unittest.TestCase):
         self.assertIsNotNone(game)
         self.assertEqual(game['name'], u'Monkey Island™ 2 Special Edition: LeChuck’s Revenge™')
 
+
+    def testStatistics(self):
+        self.assertEqual(0, self.mockStatistics.userCount)
+        self.testGetUser()
+        self.assertEqual(1, self.mockStatistics.userCount)
+        self.testGetVanityProfile()
+        self.assertEqual(2, self.mockStatistics.userCount)
+        
+        self.assertEqual(0, self.mockStatistics.gamesForUserCount)
+        self.testGetGamesForUserWithVanityProfile()
+        self.assertEqual(1, self.mockStatistics.gamesForUserCount)
+        self.testGetGamesForUser()
+        self.assertEqual(2, self.mockStatistics.gamesForUserCount)
+
+        self.assertEqual(0, self.mockStatistics.detailsFetchedCount)
+        self.testGetDetailsForGame()
+        self.assertEqual(1, self.mockStatistics.detailsFetchedCount)
+        self.testAlienSwarm()
+        self.assertEqual(2, self.mockStatistics.detailsFetchedCount)
 
 if __name__ == "__main__":
     unittest.main()

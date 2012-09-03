@@ -5,12 +5,14 @@ from cache import Cache
 import traceback
 import json
 import ConfigParser
+from statistics import Statistics
 
 
 class Handler(BaseHTTPRequestHandler):
     def __init__(self, request, client_address, server):
         cache = Cache()
-        self.dissector = SteamDissector(cache)
+        statistics = Statistics()
+        self.dissector = SteamDissector(cache, statistics)
         BaseHTTPRequestHandler.__init__(self, request, client_address, server)
         
         

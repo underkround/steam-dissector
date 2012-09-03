@@ -2,15 +2,16 @@ from cache import Cache
 import unittest
 from steam_dissector import SteamDissector, GameNotFoundException
 import json
+from statistics import Statistics
 
 
 class TestSteamDissector(unittest.TestCase):
     
     def setUp(self):
         self.cache = Cache()
-        #self.cache.clear()
+        self.statistics = Statistics()
 
-        self.steamDissector = SteamDissector(self.cache)
+        self.steamDissector = SteamDissector(self.cache, self.statistics)
 
 
     def testForRealz(self):
