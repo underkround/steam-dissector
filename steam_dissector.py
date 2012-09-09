@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import datetime
 import calendar
 import re
+from urllib2 import HTTPError
 
 class NoRedirectHandler(urllib2.HTTPRedirectHandler):
     def http_error_302(self, req, fp, code, msg, headers):
@@ -37,6 +38,10 @@ class UserNotFoundException(Exception):
     pass
 
 
+class SteamUnavailableException(Exception):
+    pass
+
+
 class SteamDissector(object):
     
     def __init__(self, cache, statistics):
@@ -48,8 +53,15 @@ class SteamDissector(object):
         url = 'http://steamcommunity.com/profiles/%s?xml=1' % userId
         if isVanityUrl:
             url = 'http://steamcommunity.com/id/%s?xml=1' % userId
-        response = urllib2.urlopen(url)
-        xml = response.read()
+
+        xml = ""
+        try:
+            response = urllib2.urlopen(url)
+            xml = response.read()
+        except HTTPError as e:
+            if (e.code == 503):
+                raise SteamUnavailableException()
+            raise e
         
         soup = BeautifulSoup(xml, 'html5lib')
         
@@ -72,8 +84,15 @@ class SteamDissector(object):
         url = 'http://steamcommunity.com/profiles/%s/games?xml=1' % userId
         if isVanityUrl:
             url = 'http://steamcommunity.com/id/%s/games?xml=1' % userId
-        response = urllib2.urlopen(url)
-        xml = response.read()
+        
+        xml = ""
+        try:
+            response = urllib2.urlopen(url)
+            xml = response.read()
+        except HTTPError as e:
+            if (e.code == 503):
+                raise SteamUnavailableException()
+            raise e
         
         soup = BeautifulSoup(xml, 'html5lib')
         
@@ -110,9 +129,16 @@ class SteamDissector(object):
         opener = urllib2.build_opener(NoRedirectHandler())
         opener.addheaders.append(("Cookie", "birthtime=315561601"))
         storeLink = 'http://store.steampowered.com/app/%s' % gameId
-        response = opener.open(storeLink)
-        html = response.read()
-        
+
+        html = ""
+        try:
+            response = opener.open(storeLink)
+            html = response.read()
+        except HTTPError as e:
+            if (e.code == 503):
+                raise SteamUnavailableException()
+            raise e
+
         soup = BeautifulSoup(html, 'html5lib', from_encoding="utf-8")
         
         game = {'id': gameId}

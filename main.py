@@ -1,6 +1,7 @@
 from SocketServer import ThreadingMixIn
 from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
-from steam_dissector import SteamDissector, GameNotFoundException, UserNotFoundException
+from steam_dissector import SteamDissector, GameNotFoundException, UserNotFoundException,\
+    SteamUnavailableException
 from cache import Cache
 import traceback
 import json
@@ -53,6 +54,8 @@ class Handler(BaseHTTPRequestHandler):
             self.printJson(json)
         except GameNotFoundException:
             self.error('Game not found', 404)
+        except SteamUnavailableException:
+            self.error('Steam not available', 503)
         except:
             self.error('Error while getting game details for id: %s' % gameId)
         
@@ -65,6 +68,8 @@ class Handler(BaseHTTPRequestHandler):
             self.printJson(json)
         except UserNotFoundException:
             self.error('Profile not found', 404)
+        except SteamUnavailableException:
+            self.error('Steam not available', 503)
         except:
             self.error('Error while getting game details for id: %s' % profileId)
         
@@ -78,6 +83,8 @@ class Handler(BaseHTTPRequestHandler):
             self.printJson(json)
         except UserNotFoundException:
             self.error('Profile not found', 404)
+        except SteamUnavailableException:
+            self.error('Steam not available', 503)
         except:
             self.error('Error while getting games for profile id: %s' % profileId)
 
