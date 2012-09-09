@@ -30,6 +30,12 @@ def getString(soup, default=''):
     return group.strip()
 
 
+def getText(soup, default=''):
+    if soup is None or soup.text is None:
+        return default
+    return soup.text.strip()
+
+
 class GameNotFoundException(Exception):
     pass
 
@@ -107,7 +113,7 @@ class SteamDissector(object):
             game['id'] = getString(xmlGame.appid)
             game['name'] = getString(xmlGame.find('name'))
             game['logo'] = getString(xmlGame.logo)
-            game['storeLink'] = getString(xmlGame.storelink)
+            game['communityUrl'] = getString(xmlGame.storelink)
             game['hoursLast2Weeks'] = getString(xmlGame.hourslast2weeks, '0')
             game['hoursOnRecord'] = getString(xmlGame.hoursonrecord, '0')
 
@@ -157,11 +163,12 @@ class SteamDissector(object):
 
         game['logoSmall'] = 'http://cdn.steampowered.com/v/gfx/apps/%s/capsule_184x69.jpg' % gameId
         game['storeLink'] = storeLink
+        game['communityUrl'] = 'http://steamcommunity.com/app/%s' % gameId
 
         tmp = soup.find('img', 'game_header_image')
         game['logoBig'] = tmp.attrs['src'].split('?')[0] if tmp is not None else ''
-                
-        game['metascore'] = getString(soup.find(id='game_area_metascore'))
+        
+        game['metascore'] = getText(soup.find(id='game_area_metascore'))
         if not game['metascore'].isdigit(): game['metascore'] = ""
 
         genreHeader = detailsBlock.find('b', text='Genre:')
