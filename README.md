@@ -15,8 +15,11 @@ Goal is to create a service that can be used to sort your Steam game library bet
 
 Uses [MongoDB](http://www.mongodb.org/) as cache, since the Steam store is pretty slow.
 
-#### Libraries used:
+#### Installing and running:
 
-* [BeautifulSoup](http://www.crummy.com/software/BeautifulSoup/)
-* [PyMongo](https://github.com/mongodb/mongo-python-driver/)
-* [html5lib](http://code.google.com/p/html5lib/) (only needed if you're running python version prior to 2.7.3)
+Requirements: `Python2.7, pip, virtualenv.`
+
+1. Clone repository, chdir into it
+2. Run command `virtualenv --no-site-packages --distribute .env && source .env/bin/activate && pip install -r dependencies.txt`
+3. Create config with `cp config.cfg.example config.cfg` and edit it for your pleasure
+4. Run the flask app with your favourite web server, developement server can be run with `python main.py`
