@@ -1,104 +1,80 @@
-from SocketServer import ThreadingMixIn
-from BaseHTTPServer import HTTPServer, BaseHTTPRequestHandler
-from steam_dissector import SteamDissector, GameNotFoundException, UserNotFoundException,\
-    SteamUnavailableException
+from steam_dissector import SteamDissector, GameNotFoundException, UserNotFoundException, SteamUnavailableException
 from cache import Cache
 import traceback
-import json
 import ConfigParser
 from statistics import Statistics
+from flask import Flask, jsonify
 
+cache = Cache()
+statistics = Statistics()
+dissector = SteamDissector(cache, statistics)
+app = Flask(__name__)
+app.debug = True
+if not app.debug:
+    import logging
+    from logging.handlers import RotatingFileHandler
+    file_handler = RotatingFileHandler('steam.log', maxBytes=1048576, backupCount=100)
+    file_handler.setLevel(logging.WARNING)
+    app.logger.addHandler(file_handler)
 
-class Handler(BaseHTTPRequestHandler):
-    def __init__(self, request, client_address, server):
-        cache = Cache()
-        statistics = Statistics()
-        self.dissector = SteamDissector(cache, statistics)
-        BaseHTTPRequestHandler.__init__(self, request, client_address, server)
-        
-        
-    def do_GET(self):
-        #hackiest of 'em all
-        if self.path.startswith('/games/'): self.getGame(self.path[7:])
-        elif self.path.startswith('/profiles/') and self.path.endswith('/games'): self.getProfileGames(self.path[10:self.path.find('/games')])
-        elif self.path.startswith('/profiles/'): self.getProfile(self.path[10:])
-        else:
-            self.error(error = False)
-            
-            
-    def printJson(self, js):
-        self.send_response(200)
-        self.send_header('Content-Type', 'application/json')
-        self.end_headers()
-        self.wfile.write(json.dumps(js))
-    
-    
-    def error(self, msg = '', code = 400, error = True):
-        if error:
-            self.log_error(msg)
-            trace = traceback.format_exc()
-            self.log_error(trace.replace('%', '%%'))
-        self.send_error(code, msg)
-    
-    
-    def isVanityUrl(self, profileId):
-        import re
-        if (re.match("\d{17}", profileId)):
-            return False
-        return True
+def error(msg = '', code = 400, err = True):
+    if err:
+        app.logger.error(msg)
+        trace = traceback.format_exc()
+        app.logger.error(trace.replace('%', '%%'))
+    return msg, code
 
-    
-    def getGame(self, gameId):
-        try:
-            json = self.dissector.getDetailsForGame(gameId)
-            self.printJson(json)
-        except GameNotFoundException:
-            self.error('Game not found', 404)
-        except SteamUnavailableException:
-            self.error('Steam not available', 503)
-        except:
-            self.error('Error while getting game details for id: %s' % gameId)
-        
-        
-    def getProfile(self, profileId):
-        vanityUrl = self.isVanityUrl(profileId)
-        try:
-            json = self.dissector.getUser(profileId, vanityUrl)
-            json['gamesUrl'] = '/profiles/%s/games' % profileId
-            self.printJson(json)
-        except UserNotFoundException:
-            self.error('Profile not found', 404)
-        except SteamUnavailableException:
-            self.error('Steam not available', 503)
-        except:
-            self.error('Error while getting game details for id: %s' % profileId)
-        
-        
-    def getProfileGames(self, profileId):
-        vanityUrl = self.isVanityUrl(profileId)
-        try:
-            json = self.dissector.getGamesForUser(profileId, vanityUrl)
-            for game in json:
-                game['detailsUrl'] = '/games/%s' % game['id']
-            self.printJson(json)
-        except UserNotFoundException:
-            self.error('Profile not found', 404)
-        except SteamUnavailableException:
-            self.error('Steam not available', 503)
-        except:
-            self.error('Error while getting games for profile id: %s' % profileId)
+def is_vanity_url(profile_id):
+    import re
+    if re.match("\d{17}", profile_id):
+        return False
+    return True
 
+@app.route("/games/<gameId>")
+def get_game(game_id):
+    try:
+        json = dissector.getDetailsForGame(game_id)
+        return jsonify(json)
+    except GameNotFoundException:
+        return error('Game not found', 404)
+    except SteamUnavailableException:
+        return error('Steam not available', 503)
+    except:
+        return error('Error while getting game details for id: %s' % game_id)
 
-class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
-    pass
+@app.route("/profiles/<profileId>")
+def get_profile(profile_id):
+    vanity_url = is_vanity_url(profile_id)
+    try:
+        json = dissector.getUser(profile_id, vanity_url)
+        json['gamesUrl'] = '/profiles/%s/games' % profile_id
+        return jsonify(json)
+    except UserNotFoundException:
+        return error('Profile not found', 404)
+    except SteamUnavailableException:
+        return error('Steam not available', 503)
+    except:
+        return error('Error while getting game details for id: %s' % profile_id)
 
+@app.route("/profiles/<profileId>/games")
+def get_profile_games(profile_id):
+    vanity_url = is_vanity_url(profile_id)
+    try:
+        json = dissector.getGamesForUser(profile_id, vanity_url)
+        for game in json:
+            game['detailsUrl'] = '/games/%s' % game['id']
+        return jsonify(json)
+    except UserNotFoundException:
+        return error('Profile not found', 404)
+    except SteamUnavailableException:
+        return error('Steam not available', 503)
+    except:
+        return error('Error while getting games for profile id: %s' % profile_id)
 
 if __name__ == '__main__':
     cfg = ConfigParser.RawConfigParser()
     cfg.read('config.cfg')
     port = cfg.getint('Server', 'port')
 
-    server = ThreadedHTTPServer(('', port), Handler)
-    print 'Starting server at port %s, use <Ctrl-C> to stop' % port
-
-    server.serve_forever()
+    app.run(host='0.0.0.0', port=port, use_evalex=False)
+    print('Starting server at port %s, use <Ctrl-C> to stop' % port)
