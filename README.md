@@ -11,15 +11,19 @@ Goal is to create a service that can be used to sort your Steam game library bet
 * "What multiplayer games my friend and I both own?"
 * "Which game is the latest adventure game I have?"
 
-### Dependencies:
+### Dependencies and libraries used:
 
-Uses [MongoDB](http://www.mongodb.org/) as cache, since the Steam store is pretty slow.
+* [MongoDB](http://www.mongodb.org/) for cache, since the Steam store is pretty slow.
+* [BeautifulSoup](http://www.crummy.com/software/BeautifulSoup/)
+* [PyMongo](https://github.com/mongodb/mongo-python-driver/)
+* [Flask](http://flask.pocoo.org/)
 
 #### Installing and running:
 
 Requirements: `Python2.7, pip, virtualenv.`
 
-1. Clone repository, chdir into it
-2. Run command `virtualenv --no-site-packages --distribute .env && source .env/bin/activate && pip install -r dependencies.txt`
-3. Create config with `cp config.cfg.example config.cfg` and edit it for your pleasure
-4. Run the flask app with your favourite web server, developement server can be run with `python main.py`
+1. Install, configure and run MongoDB
+2. Clone repository, chdir into it
+3. Run command `virtualenv --no-site-packages --distribute .env && source .env/bin/activate && pip install -r dependencies.txt`
+4. Create config with `cp config.cfg.example config.cfg` and edit it for your pleasure
+5. Run the flask app with your favourite web server, developement server can be run with `python main.py`, gunicorn can be run with `gunicorn -b '127.0.0.1:8088' -w 4 main:app`
