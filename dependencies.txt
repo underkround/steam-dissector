@@ -1,2 +1,5 @@
 Flask==0.10.1
 beautifulsoup4==4.3.2
+html5lib==0.999
+pymongo==2.6.3
+gunicorn==18.0

@@ -4,18 +4,13 @@ import traceback
 import ConfigParser
 from statistics import Statistics
 from flask import Flask, jsonify
+import json
 
 cache = Cache()
 statistics = Statistics()
 dissector = SteamDissector(cache, statistics)
 app = Flask(__name__)
-app.debug = True
-if not app.debug:
-    import logging
-    from logging.handlers import RotatingFileHandler
-    file_handler = RotatingFileHandler('steam.log', maxBytes=1048576, backupCount=100)
-    file_handler.setLevel(logging.WARNING)
-    app.logger.addHandler(file_handler)
+app.debug = False
 
 def error(msg = '', code = 400, err = True):
     if err:
@@ -30,11 +25,15 @@ def is_vanity_url(profile_id):
         return False
     return True
 
-@app.route("/games/<gameId>")
+@app.route("/")
+def default():
+  return "use /games/<id> and /profiles/<id> and /profiles/<id>/games"
+
+@app.route("/games/<game_id>")
 def get_game(game_id):
     try:
-        json = dissector.getDetailsForGame(game_id)
-        return jsonify(json)
+        js = dissector.getDetailsForGame(game_id)
+        return jsonify(js)
     except GameNotFoundException:
         return error('Game not found', 404)
     except SteamUnavailableException:
@@ -42,13 +41,13 @@ def get_game(game_id):
     except:
         return error('Error while getting game details for id: %s' % game_id)
 
-@app.route("/profiles/<profileId>")
+@app.route("/profiles/<profile_id>")
 def get_profile(profile_id):
     vanity_url = is_vanity_url(profile_id)
     try:
-        json = dissector.getUser(profile_id, vanity_url)
-        json['gamesUrl'] = '/profiles/%s/games' % profile_id
-        return jsonify(json)
+        js = dissector.getUser(profile_id, vanity_url)
+        js['gamesUrl'] = '/profiles/%s/games' % profile_id
+        return jsonify(js)
     except UserNotFoundException:
         return error('Profile not found', 404)
     except SteamUnavailableException:
@@ -56,14 +55,14 @@ def get_profile(profile_id):
     except:
         return error('Error while getting game details for id: %s' % profile_id)
 
-@app.route("/profiles/<profileId>/games")
+@app.route("/profiles/<profile_id>/games")
 def get_profile_games(profile_id):
     vanity_url = is_vanity_url(profile_id)
     try:
-        json = dissector.getGamesForUser(profile_id, vanity_url)
-        for game in json:
+        js = dissector.getGamesForUser(profile_id, vanity_url)
+        for game in js:
             game['detailsUrl'] = '/games/%s' % game['id']
-        return jsonify(json)
+        return json.dumps(js)
     except UserNotFoundException:
         return error('Profile not found', 404)
     except SteamUnavailableException:
@@ -76,5 +75,4 @@ if __name__ == '__main__':
     cfg.read('config.cfg')
     port = cfg.getint('Server', 'port')
 
-    app.run(host='0.0.0.0', port=port, use_evalex=False)
-    print('Starting server at port %s, use <Ctrl-C> to stop' % port)
+    app.run(port=port)
