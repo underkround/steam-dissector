@@ -10,7 +10,6 @@ cache = Cache()
 statistics = Statistics()
 dissector = SteamDissector(cache, statistics)
 app = Flask(__name__)
-app.debug = False
 
 def error(msg = '', code = 400, err = True):
     if err:
@@ -75,4 +74,4 @@ if __name__ == '__main__':
     cfg.read('config.cfg')
     port = cfg.getint('Server', 'port')
 
-    app.run(port=port)
+    app.run(debug=False, host='0.0.0.0', port=port)
