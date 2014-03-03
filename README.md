@@ -4,7 +4,7 @@ SteamDissector is an library/service that can be used to fetch data from Steam, 
 
 ### Goals:
 
-SteamDissector is primarily made for use in conjunction with [SteamDissector web gui](https://github.com/zemm/steam-dissector-gui).
+SteamDissector is primarily made for use in conjunction with [SteamDissector web ui](https://github.com/zemm/steam-dissector-ui).
 
 Goal is to create a service that can be used to sort your Steam game library better, and answer questions such as:
 * "What controller enabled games do I have?"
