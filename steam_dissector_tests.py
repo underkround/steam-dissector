@@ -50,6 +50,11 @@ class TestSteamDissector(unittest.TestCase):
         self.assertTrue(float(terraria['hoursOnRecord']) > 0)
 
         
+    def testGetGamesForUserSpeed(self):
+        for x in xrange(10):
+            self.steamDissector.getGamesForUser('76561197972272127')
+
+
     def testGetDetailsForGame(self):
         terraria = self.steamDissector.getDetailsForGame('105600')
         self.assertIsNotNone(terraria)

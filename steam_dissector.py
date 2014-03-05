@@ -4,6 +4,7 @@ import datetime
 import calendar
 import re
 from urllib2 import HTTPError
+from lxml import etree
 
 class NoRedirectHandler(urllib2.HTTPRedirectHandler):
     def http_error_302(self, req, fp, code, msg, headers):
@@ -90,39 +91,41 @@ class SteamDissector(object):
         url = 'http://steamcommunity.com/profiles/%s/games?xml=1' % userId
         if isVanityUrl:
             url = 'http://steamcommunity.com/id/%s/games?xml=1' % userId
-        
-        xml = ""
+
+        parser = etree.XMLParser(remove_blank_text=True)
         try:
-            response = urllib2.urlopen(url)
-            xml = response.read()
+            tree = etree.parse(url, parser)
         except HTTPError as e:
-            if (e.code == 503):
+            if e.code == 503:
                 raise SteamUnavailableException()
             raise e
         
-        soup = BeautifulSoup(xml, 'html5lib')
-        
-        if soup.response is not None and soup.response.error is not None:
+        if tree.response is not None and tree.response.error is not None:
             raise UserNotFoundException()
 
-        xmlgames = soup.find_all('game')
+        xmlgames = tree.getroot()[2]
         
         games = []
         for xmlGame in xmlgames:
             game = {}
-            game['id'] = getString(xmlGame.appid)
-            game['name'] = getString(xmlGame.find('name'))
-            game['logo'] = getString(xmlGame.logo)
-            game['communityUrl'] = getString(xmlGame.storelink)
-            game['hoursLast2Weeks'] = getString(xmlGame.hourslast2weeks, '0')
-            game['hoursOnRecord'] = getString(xmlGame.hoursonrecord, '0')
+            game['id'] = xmlGame.find("appid")
+            game['name'] = xmlGame.find('name')
+            game['logo'] = xmlGame.find('logo')
+            game['communityUrl'] = xmlGame.find('storelink')
+            game['hoursLast2Weeks'] = xmlGame.find('hourslast2weeks')
+            game['hoursOnRecord'] = xmlGame.find('hoursonrecord')
+
+            if game['hoursLast2Weeks'] is None:
+                game['hoursLast2Weeks'] = 0
+            if game['hoursOnRecord'] is None:
+                game['hoursOnRecord'] = 0
 
             games.append(game)
 
         self.statistics.putGamesForUser(userId, games)
         return games
-    
-    
+
+
     def getDetailsForGame(self, gameId):
         self.statistics.detailsFetched(gameId)
 
