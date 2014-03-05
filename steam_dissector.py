@@ -61,27 +61,24 @@ class SteamDissector(object):
         if isVanityUrl:
             url = 'http://steamcommunity.com/id/%s?xml=1' % userId
 
-        xml = ""
+        parser = etree.XMLParser(remove_blank_text=True)
         try:
-            response = urllib2.urlopen(url)
-            xml = response.read()
-        except HTTPError as e:
-            if (e.code == 503):
-                raise SteamUnavailableException()
-            raise e
-        
-        soup = BeautifulSoup(xml, 'html5lib')
-        
-        if soup.response is not None and soup.response.error is not None:
+            tree = etree.parse(url, parser)
+        except IOError as e:
+            raise SteamUnavailableException()
+
+        root = tree.getroot()
+
+        if root[0].tag == 'error':
             raise UserNotFoundException()
-        
+
         user = {}
-        user['id'] = getString(soup.steamid64)
-        user['name'] = getString(soup.steamid)
-        user['onlineState'] = getString(soup.onlinestate)
-        user['avatarIcon'] = getString(soup.avataricon)
-        user['avatarMedium'] = getString(soup.avatarmedium)
-        user['avatarFull'] = getString(soup.avatarfull)
+        user['id'] = root.find('steamID64').text
+        user['name'] = root.find('steamID').text
+        user['onlineState'] = root.find('onlineState').text
+        user['avatarIcon'] = root.find('avatarIcon').text
+        user['avatarMedium'] = root.find('avatarMedium').text
+        user['avatarFull'] = root.find('avatarFull').text
         
         self.statistics.putUser(user)
         return user
@@ -95,29 +92,34 @@ class SteamDissector(object):
         parser = etree.XMLParser(remove_blank_text=True)
         try:
             tree = etree.parse(url, parser)
-        except HTTPError as e:
-            if e.code == 503:
-                raise SteamUnavailableException()
-            raise e
-        
-        if tree.response is not None and tree.response.error is not None:
+        except IOError as e:
+            raise SteamUnavailableException()
+
+        root = tree.getroot()
+
+        if root[0].tag == 'error':
             raise UserNotFoundException()
 
-        xmlgames = tree.getroot()[2]
+        xmlgames = root[2]
         
         games = []
         for xmlGame in xmlgames:
             game = {}
-            game['id'] = xmlGame.find("appid")
-            game['name'] = xmlGame.find('name')
-            game['logo'] = xmlGame.find('logo')
-            game['communityUrl'] = xmlGame.find('storelink')
-            game['hoursLast2Weeks'] = xmlGame.find('hourslast2weeks')
-            game['hoursOnRecord'] = xmlGame.find('hoursonrecord')
+            game['id'] = xmlGame.find("appID").text
+            game['name'] = xmlGame.find('name').text
+            game['logo'] = xmlGame.find('logo').text
+            game['communityUrl'] = xmlGame.find('storeLink').text
+            game['hoursLast2Weeks'] = xmlGame.find('hoursLast2Weeks')
+            game['hoursOnRecord'] = xmlGame.find('hoursOnRecord')
 
-            if game['hoursLast2Weeks'] is None:
+            if game['hoursLast2Weeks'] is not None:
+                game['hoursLast2Weeks'] = game['hoursLast2Weeks'].text
+            else:
                 game['hoursLast2Weeks'] = 0
-            if game['hoursOnRecord'] is None:
+
+            if game['hoursOnRecord'] is not None:
+                game['hoursOnRecord'] = game['hoursOnRecord'].text
+            else:
                 game['hoursOnRecord'] = 0
 
             games.append(game)
