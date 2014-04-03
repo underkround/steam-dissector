@@ -141,7 +141,6 @@ class SteamDissector(object):
         opener.addheaders.append(("Cookie", "birthtime=315561601"))
         storeLink = 'http://store.steampowered.com/app/%s' % gameId
 
-        html = ""
         try:
             response = opener.open(storeLink)
             html = response.read()

@@ -1,4 +1,5 @@
-﻿import unittest
+﻿# coding=utf-8
+import unittest
 from steam_dissector import SteamDissector, UserNotFoundException,\
     GameNotFoundException
 from mock_cache import MockCache
@@ -59,8 +60,8 @@ class TestSteamDissector(unittest.TestCase):
         terraria = self.steamDissector.getDetailsForGame('105600')
         self.assertIsNotNone(terraria)
         self.assertEqual(terraria['id'], '105600')
-        self.assertEqual(terraria['logoBig'], 'http://cdn4.steampowered.com/v/gfx/apps/105600/header_292x136.jpg')
-        self.assertEqual(terraria['logoSmall'], 'http://cdn.steampowered.com/v/gfx/apps/105600/capsule_184x69.jpg')
+        self.assertTrue(terraria['logoBig'].endswith('header_292x136.jpg'), terraria['logoBig'])
+        self.assertTrue(terraria['logoSmall'].endswith('capsule_184x69.jpg'), terraria['logoSmall'])
         self.assertEqual(terraria['storeLink'], 'http://store.steampowered.com/app/105600')
         self.assertEqual(terraria['communityUrl'], 'http://steamcommunity.com/app/105600')
         self.assertEqual(terraria['metascore'], '83')
@@ -183,6 +184,13 @@ class TestSteamDissector(unittest.TestCase):
         self.testAlienSwarm()
         self.assertEqual(2, self.mockStatistics.detailsFetchedCount)
 
+
+    def testUserWithUnicodeName(self):
+        user = self.steamDissector.getUser('76561198002592825', False)
+        self.assertEqual(user['name'], u'ぴえれ')
+
+        games = self.steamDissector.getGamesForUser('76561198002592825', False)
+        self.assertTrue(len(games) > 5)
+
 if __name__ == "__main__":
     unittest.main()
-    
