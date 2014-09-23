@@ -16,6 +16,8 @@ config.update({
 config.loadFileSection('config.cfg', 'SteamDissector')
 config.loadEnv(['HOST', 'PORT', 'MONGO_URI'])
 
+print repr(config)
+
 
 mongoUri = config.get('mongo_uri')
 cache = Cache(mongoUri)
