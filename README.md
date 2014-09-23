@@ -22,6 +22,7 @@ Goal is to create a service that can be used to sort your Steam game library bet
 #### Installing and running:
 
 Requirements: `Python2.7, pip, virtualenv.`
+Requirements for lxml: `python-dev, libxslt1-dev, zlib1g-dev`.
 
 1. Install, configure and run MongoDB
 2. Clone repository, chdir into it
