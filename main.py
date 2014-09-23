@@ -9,7 +9,7 @@ from config import Config
 config = Config()
 # Setup config defaults
 config.update({
-    'mongo_uri': 'mongodb://localhost',
+    'mongo_uri': 'mongodb://localhost/steam-dissector',
     'host': '0.0.0.0',
     'port': 8088
 })

@@ -3,10 +3,10 @@ import pymongo
 class Cache(object):
     
     def __init__(self, mongoUri):
-        self.connection = pymongo.Connection(mongoUri)
-        self.db = self.connection['steam-dissector']
-        self.games = self.db.games
-        self.games.ensure_index('id', unique=True)
+        client = pymongo.MongoClient(mongoUri)
+        dbName = pymongo.uri_parser.parse_uri(mongoUri)['database']
+        db = client[dbName]
+        self.games = db.games
 
 
     def clear(self):
