@@ -1,17 +1,12 @@
 import pymongo
-import ConfigParser
 
 class Cache(object):
     
-    def __init__(self):
-        cfg = ConfigParser.RawConfigParser()
-        cfg.read('config.cfg')
-        connString = cfg.get('MongoDB', 'connectionString')
-        
-        self.connection = pymongo.Connection(connString)
-        self.db = self.connection['steam-dissector']
-        self.games = self.db.games
-        self.games.ensure_index('id', unique=True)
+    def __init__(self, mongoUri):
+        client = pymongo.MongoClient(mongoUri)
+        dbName = pymongo.uri_parser.parse_uri(mongoUri)['database']
+        db = client[dbName]
+        self.games = db.games
 
 
     def clear(self):

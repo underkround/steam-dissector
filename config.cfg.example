@@ -1,6 +1,6 @@
-[MongoDB]
-#connection string for mongodb (see http://www.mongodb.org/display/DOCS/Connections)
-connectionString=mongodb://localhost
+[SteamDissector]
 
-[Server]
-port=8088
+#connection string for mongodb (see http://www.mongodb.org/display/DOCS/Connections)
+MONGO_URI=mongodb://localhost/steam-dissector
+
+PORT=8088
