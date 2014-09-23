@@ -1,16 +1,11 @@
 import pymongo
-import ConfigParser
 from copy import copy
 from time import time
 
 class Statistics(object):
-    
-    def __init__(self):
-        cfg = ConfigParser.RawConfigParser()
-        cfg.read('config.cfg')
-        connString = cfg.get('MongoDB', 'connectionString')
-        
-        self.connection = pymongo.Connection(connString)
+
+    def __init__(self, mongoUri):
+        self.connection = pymongo.Connection(mongoUri)
         self.db = self.connection['steam-dissector']
         self.stats_profiles = self.db.stats_profiles
         self.stats_games_for_profiles = self.db.stats_games_for_profiles

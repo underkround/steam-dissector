@@ -1,13 +1,25 @@
 from steam_dissector import SteamDissector, GameNotFoundException, UserNotFoundException, SteamUnavailableException
 from cache import Cache
 import traceback
-import ConfigParser
 from statistics import Statistics
 from flask import Flask, jsonify
 import json
+from config import Config
 
-cache = Cache()
-statistics = Statistics()
+config = Config()
+# Setup config defaults
+config.update({
+    'mongo_uri': 'mongodb://localhost',
+    'host': '0.0.0.0',
+    'port': 8088
+})
+config.loadFileSection('config.cfg', 'SteamDissector')
+config.loadEnv(['HOST', 'PORT', 'MONGO_URI'])
+
+
+mongoUri = config.get('mongo_uri')
+cache = Cache(mongoUri)
+statistics = Statistics(mongoUri)
 dissector = SteamDissector(cache, statistics)
 app = Flask(__name__)
 
@@ -70,8 +82,6 @@ def get_profile_games(profile_id):
         return error('Error while getting games for profile id: %s' % profile_id)
 
 if __name__ == '__main__':
-    cfg = ConfigParser.RawConfigParser()
-    cfg.read('config.cfg')
-    port = cfg.getint('Server', 'port')
-
-    app.run(debug=False, host='0.0.0.0', port=port)
+    host = config.get('host')
+    port = int(config.get('port'))
+    app.run(debug=False, host=host, port=port)
