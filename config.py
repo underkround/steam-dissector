@@ -2,7 +2,7 @@ import os
 import ConfigParser
 
 
-# To be case insensitive (files vs env), store all as lowercase
+# To be case insensitive (files vs env), store all as uppercase
 class Config(object):
 
     def __init__(self):
@@ -18,12 +18,12 @@ class Config(object):
 
 
     def get(self, key, fallback=None):
-        safeKey = key.lower()
+        safeKey = key.upper()
         return self.data.get(safeKey, fallback)
 
 
     def set(self, key, value):
-        safeKey = key.lower()
+        safeKey = key.upper()
         self.data[safeKey] = value
 
 
@@ -37,7 +37,7 @@ class Config(object):
 
 
     def __repr__(self):
-        lines = ["%s = %s" % (k,v) for (k,v) in self.data.iteritems()]
+        lines = ["%s=%s" % (k,v) for (k,v) in self.data.iteritems()]
         return "\n".join(lines)
 
 
