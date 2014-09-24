@@ -4,3 +4,6 @@
 MONGO_URI=mongodb://localhost/steam-dissector
 
 PORT=8088
+
+# Space separated list of allowed CORS origins
+CORS_ORIGINS=*
