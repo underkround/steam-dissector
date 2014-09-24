@@ -210,16 +210,19 @@ class SteamDissector(object):
                 
         releaseDateHeader = detailsBlock.find('b', text='Release Date:')
         if releaseDateHeader is not None and releaseDateHeader.nextSibling is not None:
-            try:
-                date = datetime.datetime.strptime(releaseDateHeader.nextSibling.strip(), '%d %b %Y')
+            raw = releaseDateHeader.nextSibling.strip()
+            date = None
+            for dateFormat in ['%d %b, %Y', '%d %b %Y', '%b %Y']:
+                if date == None:
+                    try:
+                        date = datetime.datetime.strptime(raw, dateFormat)
+                    except:
+                        pass
+                        # shitty release date formats
+            if date != None:
                 game['releaseDate'] = str(calendar.timegm(date.utctimetuple()))
-            except:
-                try:
-                    date = datetime.datetime.strptime(releaseDateHeader.nextSibling.strip(), '%b %Y')
-                    game['releaseDate'] = str(calendar.timegm(date.utctimetuple()))
-                except:
-                    pass
-                    # shitty release date format
+            else:
+                game['releaseDate'] = ''
 
         features = soup.find_all('div', 'game_area_details_specs')
         if features is not None:
