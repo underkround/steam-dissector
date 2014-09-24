@@ -3,6 +3,7 @@ from cache import Cache
 import traceback
 from statistics import Statistics
 from flask import Flask, jsonify
+from flask.ext.cors import CORS
 import json
 from config import Config
 
@@ -10,20 +11,25 @@ config = Config()
 # Setup config defaults
 config.update({
     'mongo_uri': 'mongodb://localhost/steam-dissector',
+    'cors_origins': '*',
     'host': '0.0.0.0',
     'port': 8088
 })
 config.loadFileSection('config.cfg', 'SteamDissector')
 config.loadEnv(['HOST', 'PORT', 'MONGO_URI'])
 
+mongoUri = config.get('mongo_uri')
+corsOrigins = [i for i in config.get('cors_origins', '').split(' ') if i]
+
+print "Config:"
 print repr(config)
 
-
-mongoUri = config.get('mongo_uri')
 cache = Cache(mongoUri)
 statistics = Statistics(mongoUri)
 dissector = SteamDissector(cache, statistics)
+
 app = Flask(__name__)
+cors = CORS(app, resources={r"/*": {"origins": corsOrigins}})
 
 def error(msg = '', code = 400, err = True):
     if err:
