@@ -60,7 +60,7 @@ class TestSteamDissector(unittest.TestCase):
         terraria = self.steamDissector.getDetailsForGame('105600')
         self.assertIsNotNone(terraria)
         self.assertEqual(terraria['id'], '105600')
-        self.assertTrue(terraria['logoBig'].endswith('header_292x136.jpg'), terraria['logoBig'])
+        self.assertTrue(terraria['logoBig'].endswith('header.jpg'), terraria['logoBig'])
         self.assertTrue(terraria['logoSmall'].endswith('capsule_184x69.jpg'), terraria['logoSmall'])
         self.assertEqual(terraria['storeLink'], 'http://store.steampowered.com/app/105600')
         self.assertEqual(terraria['communityUrl'], 'http://steamcommunity.com/app/105600')

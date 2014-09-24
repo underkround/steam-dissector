@@ -169,7 +169,7 @@ class SteamDissector(object):
         game['storeLink'] = storeLink
         game['communityUrl'] = 'http://steamcommunity.com/app/%s' % gameId
 
-        tmp = soup.find('img', 'game_header_image')
+        tmp = soup.find('img', 'game_header_image_full')
         game['logoBig'] = tmp.attrs['src'].split('?')[0] if tmp is not None else ''
         
         game['metascore'] = ''
