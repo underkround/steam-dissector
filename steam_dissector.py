@@ -230,5 +230,12 @@ class SteamDissector(object):
             for feature in features:
                 game['features'].append(getString(feature.find('a', 'name')))
 
+        userTagsContainer = soup.find('div', 'popular_tags')
+        if userTagsContainer is not None:
+            userTags = userTagsContainer.find_all('a')
+            game['userTags'] = []
+            for userTag in userTags:
+                game['userTags'].append(userTag.string.strip())
+
         self.cache.putGame(game)
         return game
