@@ -30,9 +30,9 @@ class TestSteamDissector(unittest.TestCase):
 
         self.assertEqual(user['id'], '76561197972272127')
         self.assertEqual(user['name'], 'murgo')
-        self.assertEqual(user['avatarIcon'], 'http://media.steampowered.com/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2.jpg')
-        self.assertEqual(user['avatarMedium'], 'http://media.steampowered.com/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_medium.jpg')
-        self.assertEqual(user['avatarFull'], 'http://media.steampowered.com/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_full.jpg')
+        self.assertTrue(user['avatarIcon'].endswith('/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2.jpg'))
+        self.assertTrue(user['avatarMedium'].endswith('/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_medium.jpg'))
+        self.assertTrue(user['avatarFull'].endswith('/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_full.jpg'))
         self.assertEqual(user['onlineState'], 'online')
         
         
