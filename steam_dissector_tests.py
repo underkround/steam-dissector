@@ -66,23 +66,25 @@ class TestSteamDissector(unittest.TestCase):
         self.assertEqual(terraria['communityUrl'], 'http://steamcommunity.com/app/105600')
         self.assertEqual(terraria['metascore'], '83')
         self.assertEqual(terraria['name'], 'Terraria')
-        self.assertItemsEqual(terraria['genres'], ['Action', 'Adventure', 'RPG', 'Indie'])
         self.assertItemsEqual(terraria['developers'], ['Re-Logic'])
         self.assertItemsEqual(terraria['publishers'], ['Re-Logic'])
         self.assertEqual(terraria['releaseDate'], '1305504000')
-        self.assertItemsEqual(terraria['features'], ['Single-player', 'Multi-player', 'Co-op', 'Steam Trading Cards'])
-        
+
         self.assertEqual(self.mockCache.getCount, 2)
         self.assertEqual(self.mockCache.putCount, 1)
         self.assertEqual(self.mockCache.games[0], terraria)
 
 
+    def testGenresForGame(self):
+        terraria = self.steamDissector.getDetailsForGame('105600')
+        self.assertIsNotNone(terraria)
+        self.assertItemsEqual(terraria['genres'], ['Action', 'Adventure', 'RPG', 'Indie'])
+
+
     def testFeaturesForGame(self):
         terraria = self.steamDissector.getDetailsForGame('105600')
         self.assertIsNotNone(terraria)
-        features = terraria['features']
-        self.assertTrue(len(features) > 3)
-        self.assertNotIn("", features)
+        self.assertItemsEqual(terraria['features'], ['Single-player', 'Multi-player', 'Co-op', 'Steam Trading Cards'])
 
 
     def testUserTagsForGame(self):

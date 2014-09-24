@@ -228,7 +228,7 @@ class SteamDissector(object):
         if features is not None:
             game['features'] = []
             for feature in features:
-                game['features'].append(getString(feature.find('div', 'name')))
+                game['features'].append(getString(feature.find('a', 'name')))
 
         self.cache.putGame(game)
         return game
