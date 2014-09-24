@@ -167,21 +167,21 @@ class TestSteamDissector(unittest.TestCase):
 
     def testStatistics(self):
         self.assertEqual(0, self.mockStatistics.userCount)
-        self.testGetUser()
+        self.steamDissector.getUser('zemm', True)
         self.assertEqual(1, self.mockStatistics.userCount)
-        self.testGetVanityProfile()
+        self.steamDissector.getUser('76561197972272127')
         self.assertEqual(2, self.mockStatistics.userCount)
-        
+
         self.assertEqual(0, self.mockStatistics.gamesForUserCount)
-        self.testGetGamesForUserWithVanityProfile()
+        self.steamDissector.getGamesForUser('zemm', True)
         self.assertEqual(1, self.mockStatistics.gamesForUserCount)
-        self.testGetGamesForUser()
+        self.steamDissector.getGamesForUser('76561197972272127')
         self.assertEqual(2, self.mockStatistics.gamesForUserCount)
 
         self.assertEqual(0, self.mockStatistics.detailsFetchedCount)
-        self.testGetDetailsForGame()
+        self.steamDissector.getDetailsForGame('105600')
         self.assertEqual(1, self.mockStatistics.detailsFetchedCount)
-        self.testAlienSwarm()
+        self.steamDissector.getDetailsForGame('630')
         self.assertEqual(2, self.mockStatistics.detailsFetchedCount)
 
 
