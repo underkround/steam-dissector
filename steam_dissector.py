@@ -172,8 +172,11 @@ class SteamDissector(object):
         tmp = soup.find('img', 'game_header_image')
         game['logoBig'] = tmp.attrs['src'].split('?')[0] if tmp is not None else ''
         
-        game['metascore'] = getText(soup.find(id='game_area_metascore'))
-        if not game['metascore'].isdigit(): game['metascore'] = ""
+        game['metascore'] = ''
+        tmp = soup.find(id='game_area_metascore')
+        if tmp != None:
+            tmp = getText(tmp.find('span'))
+            if tmp.isdigit(): game['metascore'] = tmp
 
         genreHeader = detailsBlock.find('b', text='Genre:')
         if genreHeader is not None:
