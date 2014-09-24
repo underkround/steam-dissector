@@ -77,6 +77,14 @@ class TestSteamDissector(unittest.TestCase):
         self.assertEqual(self.mockCache.games[0], terraria)
 
 
+    def testFeaturesForGame(self):
+        terraria = self.steamDissector.getDetailsForGame('105600')
+        self.assertIsNotNone(terraria)
+        features = terraria['features']
+        self.assertTrue(len(features) > 3)
+        self.assertNotIn("", features)
+
+
     def testCacheIsUsed(self):
         game1 = self.steamDissector.getDetailsForGame('105600')
         game2 = self.steamDissector.getDetailsForGame('105600')
