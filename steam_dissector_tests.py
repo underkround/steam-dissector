@@ -30,22 +30,22 @@ class TestSteamDissector(unittest.TestCase):
 
         self.assertEqual(user['id'], '76561197972272127')
         self.assertEqual(user['name'], 'murgo')
-        self.assertEqual(user['avatarIcon'], 'http://media.steampowered.com/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2.jpg')
-        self.assertEqual(user['avatarMedium'], 'http://media.steampowered.com/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_medium.jpg')
-        self.assertEqual(user['avatarFull'], 'http://media.steampowered.com/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_full.jpg')
+        self.assertTrue(user['avatarIcon'].endswith('/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2.jpg'))
+        self.assertTrue(user['avatarMedium'].endswith('/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_medium.jpg'))
+        self.assertTrue(user['avatarFull'].endswith('/steamcommunity/public/images/avatars/54/54b97d0998d152f01d876d03dad1fdd2fb642dd2_full.jpg'))
         self.assertEqual(user['onlineState'], 'online')
         
         
     def testGetGamesForUser(self):
         games = self.steamDissector.getGamesForUser('76561197972272127')
         self.assertTrue(len(games) > 200)
-        
+
         terraria = [game for game in games if game['name'] == 'Terraria'][0]
 
         self.assertIsNotNone(terraria)
         self.assertEqual(terraria['id'], '105600')
         self.assertEqual(terraria['name'], 'Terraria')
-        self.assertEqual(terraria['logo'], 'http://media.steampowered.com/steamcommunity/public/images/apps/105600/e3f375e78ada9d2ec7ffa521fe1b0052d1d2bbb5.jpg')
+        self.assertTrue(terraria['logo'].endswith('/steamcommunity/public/images/apps/105600/e3f375e78ada9d2ec7ffa521fe1b0052d1d2bbb5.jpg'))
         self.assertEqual(terraria['communityUrl'], 'http://steamcommunity.com/app/105600')
         self.assertNotEqual(terraria['hoursLast2Weeks'], '')
         self.assertTrue(float(terraria['hoursOnRecord']) > 0)
@@ -81,8 +81,8 @@ class TestSteamDissector(unittest.TestCase):
         game1 = self.steamDissector.getDetailsForGame('105600')
         game2 = self.steamDissector.getDetailsForGame('105600')
         self.assertSequenceEqual(game1, game2)
-        
-        self.assertEqual(self.mockCache.getCount, 3)
+
+        self.assertEqual(self.mockCache.getCount, 2)
         self.assertEqual(self.mockCache.putCount, 1)
         self.assertEqual(self.mockCache.games[0], game2)
         self.assertEqual(self.mockCache.games[0], game1)
@@ -167,21 +167,21 @@ class TestSteamDissector(unittest.TestCase):
 
     def testStatistics(self):
         self.assertEqual(0, self.mockStatistics.userCount)
-        self.testGetUser()
+        self.steamDissector.getUser('zemm', True)
         self.assertEqual(1, self.mockStatistics.userCount)
-        self.testGetVanityProfile()
+        self.steamDissector.getUser('76561197972272127')
         self.assertEqual(2, self.mockStatistics.userCount)
-        
+
         self.assertEqual(0, self.mockStatistics.gamesForUserCount)
-        self.testGetGamesForUserWithVanityProfile()
+        self.steamDissector.getGamesForUser('zemm', True)
         self.assertEqual(1, self.mockStatistics.gamesForUserCount)
-        self.testGetGamesForUser()
+        self.steamDissector.getGamesForUser('76561197972272127')
         self.assertEqual(2, self.mockStatistics.gamesForUserCount)
 
         self.assertEqual(0, self.mockStatistics.detailsFetchedCount)
-        self.testGetDetailsForGame()
+        self.steamDissector.getDetailsForGame('105600')
         self.assertEqual(1, self.mockStatistics.detailsFetchedCount)
-        self.testAlienSwarm()
+        self.steamDissector.getDetailsForGame('630')
         self.assertEqual(2, self.mockStatistics.detailsFetchedCount)
 
 
