@@ -19,12 +19,22 @@ Goal is to create a service that can be used to sort your Steam game library bet
 * [PyMongo](https://github.com/mongodb/mongo-python-driver/)
 * [Flask](http://flask.pocoo.org/)
 
-#### Installing and running:
+#### Installing and running locally:
 
 Requirements: `Python2.7, pip, virtualenv.`
+Requirements for lxml: `python-dev, libxslt1-dev, zlib1g-dev`.
 
 1. Install, configure and run MongoDB
 2. Clone repository, chdir into it
-3. Run command `virtualenv --no-site-packages --distribute .env && source .env/bin/activate && pip install -r dependencies.txt`
+3. Run command `virtualenv --no-site-packages --distribute .env && source .env/bin/activate && pip install -r requirements.txt`
 4. Create config with `cp config.cfg.example config.cfg` and edit it for your pleasure
 5. Run the flask app with your favourite web server, developement server can be run with `python main.py`, gunicorn can be run with `gunicorn -b '127.0.0.1:8088' -w 3 -t 60 main:app`
+
+#### Installing and running on [dokku](https://github.com/progrium/dokku) support:
+
+Requirements: [dokku-plugin/mongodb](https://github.com/jeffutter/dokku-mongodb-plugin)
+
+1. dokku mongodb:create steam-dissector
+2. dokku mongodb:link steam-dissector
+3. git remote add dokku dokku@....:steam-dissector
+4. git push dokku master
