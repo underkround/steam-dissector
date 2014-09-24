@@ -29,7 +29,7 @@ statistics = Statistics(mongoUri)
 dissector = SteamDissector(cache, statistics)
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/*": {"origins": corsOrigins}})
+cors = CORS(app, headers='Content-Type', resources={r'/*': {'origins': corsOrigins}})
 
 def error(msg = '', code = 400, err = True):
     if err:
