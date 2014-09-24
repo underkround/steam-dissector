@@ -85,6 +85,12 @@ class TestSteamDissector(unittest.TestCase):
         self.assertNotIn("", features)
 
 
+    def testUserTagsForGame(self):
+        terraria = self.steamDissector.getDetailsForGame('105600')
+        self.assertIsNotNone(terraria)
+        self.assertEqual(terraria['userTags'], ['Sandbox', 'Adventure', 'Indie', '2D', 'Crafting'])
+
+
     def testCacheIsUsed(self):
         game1 = self.steamDissector.getDetailsForGame('105600')
         game2 = self.steamDissector.getDetailsForGame('105600')
