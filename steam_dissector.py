@@ -169,11 +169,14 @@ class SteamDissector(object):
         game['storeLink'] = storeLink
         game['communityUrl'] = 'http://steamcommunity.com/app/%s' % gameId
 
-        tmp = soup.find('img', 'game_header_image')
+        tmp = soup.find('img', 'game_header_image_full')
         game['logoBig'] = tmp.attrs['src'].split('?')[0] if tmp is not None else ''
         
-        game['metascore'] = getText(soup.find(id='game_area_metascore'))
-        if not game['metascore'].isdigit(): game['metascore'] = ""
+        game['metascore'] = ''
+        tmp = soup.find(id='game_area_metascore')
+        if tmp != None:
+            tmp = getText(tmp.find('span'))
+            if tmp.isdigit(): game['metascore'] = tmp
 
         genreHeader = detailsBlock.find('b', text='Genre:')
         if genreHeader is not None:
@@ -207,22 +210,32 @@ class SteamDissector(object):
                 
         releaseDateHeader = detailsBlock.find('b', text='Release Date:')
         if releaseDateHeader is not None and releaseDateHeader.nextSibling is not None:
-            try:
-                date = datetime.datetime.strptime(releaseDateHeader.nextSibling.strip(), '%d %b %Y')
+            raw = releaseDateHeader.nextSibling.strip()
+            date = None
+            for dateFormat in ['%d %b, %Y', '%d %b %Y', '%b %Y']:
+                if date == None:
+                    try:
+                        date = datetime.datetime.strptime(raw, dateFormat)
+                    except:
+                        pass
+                        # shitty release date formats
+            if date != None:
                 game['releaseDate'] = str(calendar.timegm(date.utctimetuple()))
-            except:
-                try:
-                    date = datetime.datetime.strptime(releaseDateHeader.nextSibling.strip(), '%b %Y')
-                    game['releaseDate'] = str(calendar.timegm(date.utctimetuple()))
-                except:
-                    pass
-                    # shitty release date format
+            else:
+                game['releaseDate'] = ''
 
         features = soup.find_all('div', 'game_area_details_specs')
         if features is not None:
             game['features'] = []
             for feature in features:
-                game['features'].append(getString(feature.find('div', 'name')))
+                game['features'].append(getString(feature.find('a', 'name')))
+
+        userTagsContainer = soup.find('div', 'popular_tags')
+        if userTagsContainer is not None:
+            userTags = userTagsContainer.find_all('a')
+            game['userTags'] = []
+            for userTag in userTags:
+                game['userTags'].append(userTag.string.strip())
 
         self.cache.putGame(game)
         return game
