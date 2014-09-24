@@ -70,7 +70,7 @@ class TestSteamDissector(unittest.TestCase):
         self.assertItemsEqual(terraria['publishers'], ['Re-Logic'])
         self.assertEqual(terraria['releaseDate'], '1305504000')
 
-        self.assertEqual(self.mockCache.getCount, 2)
+        self.assertEqual(self.mockCache.getCount, 1)
         self.assertEqual(self.mockCache.putCount, 1)
         self.assertEqual(self.mockCache.games[0], terraria)
 
