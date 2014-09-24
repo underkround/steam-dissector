@@ -225,5 +225,4 @@ class SteamDissector(object):
                 game['features'].append(getString(feature.find('div', 'name')))
 
         self.cache.putGame(game)
-        dbgame = self.cache.getGame(gameId)
-        return dbgame
+        return game
