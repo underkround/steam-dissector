@@ -7,6 +7,9 @@ from flask.ext.cors import CORS
 import json
 from config import Config
 
+import sys, os
+
+
 config = Config()
 # Setup config defaults
 config.update({
@@ -58,6 +61,7 @@ def get_game(game_id):
     except SteamUnavailableException:
         return error('Steam not available', 503)
     except:
+        print "Unexpected exception:", sys.exc_info()[1]
         return error('Error while getting game details for id: %s' % game_id)
 
 @app.route("/profiles/<profile_id>")
@@ -72,6 +76,7 @@ def get_profile(profile_id):
     except SteamUnavailableException:
         return error('Steam not available', 503)
     except:
+        print "Unexpected exception:", sys.exc_info()[1]
         return error('Error while getting game details for id: %s' % profile_id)
 
 @app.route("/profiles/<profile_id>/games")
@@ -87,6 +92,7 @@ def get_profile_games(profile_id):
     except SteamUnavailableException:
         return error('Steam not available', 503)
     except:
+        print "Unexpected exception:", sys.exc_info()[1]
         return error('Error while getting games for profile id: %s' % profile_id)
 
 if __name__ == '__main__':
