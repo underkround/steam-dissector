@@ -81,8 +81,8 @@ class TestSteamDissector(unittest.TestCase):
         game1 = self.steamDissector.getDetailsForGame('105600')
         game2 = self.steamDissector.getDetailsForGame('105600')
         self.assertSequenceEqual(game1, game2)
-        
-        self.assertEqual(self.mockCache.getCount, 3)
+
+        self.assertEqual(self.mockCache.getCount, 2)
         self.assertEqual(self.mockCache.putCount, 1)
         self.assertEqual(self.mockCache.games[0], game2)
         self.assertEqual(self.mockCache.games[0], game1)
