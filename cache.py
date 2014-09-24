@@ -1,12 +1,18 @@
 import pymongo
+import nullmongo
+
 
 class Cache(object):
     
     def __init__(self, mongoUri):
-        client = pymongo.MongoClient(mongoUri)
-        dbName = pymongo.uri_parser.parse_uri(mongoUri)['database']
-        db = client[dbName]
-        self.games = db.games
+        try:
+            client = pymongo.MongoClient(mongoUri)
+            dbName = pymongo.uri_parser.parse_uri(mongoUri)['database']
+            db = client[dbName]
+            self.games = db.games
+        except:
+            print("WARNING: Cache is using null storage")
+            self.games = nullmongo.NullCollection()
 
 
     def clear(self):
