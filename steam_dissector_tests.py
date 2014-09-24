@@ -39,13 +39,13 @@ class TestSteamDissector(unittest.TestCase):
     def testGetGamesForUser(self):
         games = self.steamDissector.getGamesForUser('76561197972272127')
         self.assertTrue(len(games) > 200)
-        
+
         terraria = [game for game in games if game['name'] == 'Terraria'][0]
 
         self.assertIsNotNone(terraria)
         self.assertEqual(terraria['id'], '105600')
         self.assertEqual(terraria['name'], 'Terraria')
-        self.assertEqual(terraria['logo'], 'http://media.steampowered.com/steamcommunity/public/images/apps/105600/e3f375e78ada9d2ec7ffa521fe1b0052d1d2bbb5.jpg')
+        self.assertTrue(terraria['logo'].endswith('/steamcommunity/public/images/apps/105600/e3f375e78ada9d2ec7ffa521fe1b0052d1d2bbb5.jpg'))
         self.assertEqual(terraria['communityUrl'], 'http://steamcommunity.com/app/105600')
         self.assertNotEqual(terraria['hoursLast2Weeks'], '')
         self.assertTrue(float(terraria['hoursOnRecord']) > 0)
