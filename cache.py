@@ -1,9 +1,10 @@
 import pymongo
 import nullmongo
+import datetime
 
 
 class Cache(object):
-    
+
     def __init__(self, mongoUri):
         try:
             client = pymongo.MongoClient(mongoUri)
@@ -20,6 +21,8 @@ class Cache(object):
 
 
     def putGame(self, game):
+        game['cache_created'] = datetime.datetime.utcnow()
+        game['cache_hits'] = 0
         self.games.update({'id': game['id']}, game, upsert=True)
 
 
@@ -27,5 +30,5 @@ class Cache(object):
         game = self.games.find_one({'id': gameId})
         if game is not None:
             del game['_id']
+            self.games.update({'id': gameId}, {'$inc': {'cache_hits': 1}})
         return game
-

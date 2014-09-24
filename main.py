@@ -6,7 +6,6 @@ from flask import Flask, jsonify
 from flask.ext.cors import CORS
 import json
 from config import Config
-
 import sys, os
 
 
@@ -54,8 +53,16 @@ def default():
 @app.route("/games/<game_id>")
 def get_game(game_id):
     try:
-        js = dissector.getDetailsForGame(game_id)
-        return jsonify(js)
+        game = dissector.getDetailsForGame(game_id)
+        resp = jsonify(game)
+        if 'cache_created' in game:
+            resp.headers['X-Cache'] = 'HIT'
+            resp.headers['X-CacheCreated'] = game['cache_created']
+        else:
+            resp.headers['X-Cache'] = 'MISS'
+        if 'cache_hits' in game:
+            resp.headers['X-CacheHits'] = game['cache_hits']
+        return resp
     except GameNotFoundException:
         return error('Game not found', 404)
     except SteamUnavailableException:
