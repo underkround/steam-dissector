@@ -30,7 +30,7 @@ Requirements for lxml: `python-dev, libxslt1-dev, zlib1g-dev`.
 4. Create config with `cp config.cfg.example config.cfg` and edit it for your pleasure
 5. Run the flask app with your favourite web server, developement server can be run with `python main.py`, gunicorn can be run with `gunicorn -b '127.0.0.1:8088' -w 3 -t 60 main:app`
 
-#### Installing and running on [dokku](https://github.com/progrium/dokku) support:
+#### Installing and running on [dokku](https://github.com/progrium/dokku):
 
 Requirements: [dokku-plugin/mongodb](https://github.com/jeffutter/dokku-mongodb-plugin)
 
