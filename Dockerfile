@@ -7,7 +7,7 @@ ADD /requirements.txt /app/requirements.txt
 
 RUN pip install -r requirements.txt
 
-ENV WORKERS 5
+ENV WORKERS 3
 ENV PORT 8080
 
 EXPOSE 8080
