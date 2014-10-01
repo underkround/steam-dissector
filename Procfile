@@ -1,1 +1,1 @@
-web: gunicorn main:app -b 0.0.0.0:$PORT -w 3
+web: gunicorn steam_dissector:app -b 0.0.0.0:$PORT -w 3

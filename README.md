@@ -28,7 +28,7 @@ Requirements for lxml: `python-dev, libxslt1-dev, zlib1g-dev`.
 2. Clone repository, chdir into it
 3. Run command `virtualenv --no-site-packages --distribute .env && source .env/bin/activate && pip install -r requirements.txt`
 4. Create config with `cp config.cfg.example config.cfg` and edit it for your pleasure
-5. Run the flask app with your favourite web server, developement server can be run with `python main.py`, gunicorn can be run with `gunicorn -b '127.0.0.1:8088' -w 3 -t 60 main:app`
+5. Run the flask app with your favourite web server, developement server can be run with `python steam_dissector`, gunicorn can be run with `gunicorn -b '127.0.0.1:8088' -w 3 -t 60 steam_dissector:app`
 
 #### Installing and running on [dokku](https://github.com/progrium/dokku):
 
