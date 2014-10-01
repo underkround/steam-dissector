@@ -116,8 +116,3 @@ def get_profile_games(profile_id):
     except:
         print "Unexpected exception:", sys.exc_info()[1]
         return error('Error while getting games for profile id: %s' % profile_id)
-
-if __name__ == '__main__':
-    host = config.get('host')
-    port = int(config.get('port'))
-    app.run(debug=False, host=host, port=port)
