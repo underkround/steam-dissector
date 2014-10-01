@@ -5,14 +5,16 @@ import datetime
 
 class Cache(object):
 
-    def __init__(self, mongoUri):
+    def __init__(self, dbUri, dbName=''):
         try:
-            client = pymongo.MongoClient(mongoUri)
-            dbName = pymongo.uri_parser.parse_uri(mongoUri)['database']
+            client = pymongo.MongoClient(dbUri)
+            if dbName == '':
+                dbName = pymongo.uri_parser.parse_uri(dbUri)['database']
             db = client[dbName]
             self.games = db.games
-        except:
-            print("WARNING: Cache is using null storage")
+        except Exception, err:
+            print "WARNING: Cache is using null storage"
+            print "  Exception: %s" % err
             self.games = nullmongo.NullCollection()
 
 
