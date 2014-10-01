@@ -12,22 +12,37 @@ import sys, os
 config = Config()
 # Setup config defaults
 config.update({
-    'mongo_uri': 'mongodb://localhost/steam-dissector',
+    # Primary (set by user)
+    'mongo_uri': '',
+    # Alternative (exported by docker)
+    'mongo_port': '',
+    # Database name
+    'mongo_db': 'steam-dissector',
+    #
     'cors_origins': '*',
     'host': '0.0.0.0',
     'port': 8088
 })
 config.loadFileSection('config.cfg', 'SteamDissector')
-config.loadEnv(['HOST', 'PORT', 'MONGO_URI'])
+config.loadEnv(['HOST', 'PORT', 'MONGO_URI', 'MONGO_PORT', 'MONGO_DB'])
 
+# Stupidly docker env var names
 mongoUri = config.get('mongo_uri')
+if mongoUri == '':
+    mongoUri = config.get('mongo_port', '')
+# Stupid mongo not handing tcp://
+if isinstance(mongoUri, str):
+    mongoUri = mongoUri.replace('tcp://', 'mongodb://')
+
+mongoDb = config.get('mongo_db', '')
+
 corsOrigins = [i for i in config.get('cors_origins', '').split(' ') if i]
 
 print "Config:"
 print repr(config)
 
-cache = Cache(mongoUri)
-statistics = Statistics(mongoUri)
+cache = Cache(dbUri=mongoUri, dbName=mongoDb)
+statistics = Statistics(dbUri=mongoUri, dbName=mongoDb)
 dissector = SteamDissector(cache, statistics)
 
 app = Flask(__name__)
