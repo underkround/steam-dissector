@@ -38,3 +38,13 @@ Requirements: [dokku-plugin/mongodb](https://github.com/jeffutter/dokku-mongodb-
 2. dokku mongodb:link steam-dissector
 3. git remote add dokku dokku@....:steam-dissector
 4. git push dokku master
+
+#### Running with docker
+
+Prebuild docker image may be pulled from [underkround/steam-dissector]()
+
+Without cache:
+```sudo docker run --rm -p 8088:8080 --name steam_dissector -d underkround/steam-dissector```
+
+With cache:
+```sudo docker run --rm -p 8088:8080 --name steam_dissector -d --link mongo:mongo underkround/steam-dissector```
