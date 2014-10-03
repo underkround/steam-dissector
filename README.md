@@ -41,10 +41,13 @@ Requirements: [dokku-plugin/mongodb](https://github.com/jeffutter/dokku-mongodb-
 
 #### Running with docker
 
-Prebuild docker image may be pulled from [underkround/steam-dissector]()
+Prebuild docker image may be pulled from [underkround/steam-dissector](https://registry.hub.docker.com/u/underkround/steam-dissector/)
 
-Without cache:
-```sudo docker run --rm -p 8088:8080 --name steam_dissector -d underkround/steam-dissector```
+Interactive testing without cache with 1 worker:
+```sudo docker run --rm -p 8088:8080 --env "WORKERS=1" underkround/steam-dissector```
 
-With cache:
-```sudo docker run --rm -p 8088:8080 --name steam_dissector -d --link mongo:mongo underkround/steam-dissector```
+Interactive with cache:
+```sudo docker run --rm -p 8088:8080 --link mongo:mongo underkround/steam-dissector```
+
+Daemoize:
+```sudo docker run -d --name steam_dissector -p 8088:8080 --link mongo:mongo underkround/steam-dissector```
