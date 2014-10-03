@@ -12,4 +12,6 @@ ENV PORT 8080
 
 EXPOSE 8080
 
+USER nobody
+
 CMD gunicorn main:app -b 0.0.0.0:$PORT -w $WORKERS --access-logfile -
