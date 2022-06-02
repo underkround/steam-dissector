@@ -1,7 +1,7 @@
 Flask==0.10.1
 Flask-Cors==1.9.0
 beautifulsoup4==4.3.2
-html5lib==0.999
+html5lib==0.99999999
 pymongo==2.6.3
 gunicorn==18.0
 lxml==3.3.3
